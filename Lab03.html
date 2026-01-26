@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abo Ali - Professional Portfolio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #8A1538;
+            --primary-dark: #6B102C;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #ffffff;
+            --bg-alt: #f9fafb;
+            --border: #e5e7eb;
+            --nav-bg: rgba(255, 255, 255, 0.95);
+            --card-bg: #ffffff;
+            --input-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --primary: #B91C4A;
+            --primary-dark: #8A1538;
+            --text: #f3f4f6;
+            --text-light: #9ca3af;
+            --bg: #111827;
+            --bg-alt: #1f2937;
+            --border: #374151;
+            --nav-bg: rgba(17, 24, 39, 0.95);
+            --card-bg: #1f2937;
+            --input-bg: #374151;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            padding: 1rem 0;
+        }
+
+        .theme-toggle,
+        .lang-toggle {
+            background: var(--bg-alt);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin-left: 0.75rem;
+            color: var(--text);
+        }
+
+        .theme-toggle {
+            font-size: 1.25rem;
+        }
+
+        .theme-toggle:hover,
+        .lang-toggle:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* RTL Support */
+        [dir="rtl"] {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+        }
+
+        [dir="rtl"] .timeline::before {
+            left: auto;
+            right: 0;
+        }
+
+        [dir="rtl"] .timeline-item {
+            padding-left: 0;
+            padding-right: 2.5rem;
+        }
+
+        [dir="rtl"] .timeline-item::before {
+            left: auto;
+            right: -5px;
+        }
+
+        [dir="rtl"] .btn-outline {
+            margin-left: 0;
+            margin-right: 1rem;
+        }
+
+        [dir="rtl"] .info-label {
+            width: 80px;
+        }
+
+        nav .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        nav .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: var(--text);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 6rem 2rem 4rem;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--bg-alt) 100%);
+        }
+
+        .hero .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .hero-content h1 span {
+            color: var(--primary);
+        }
+
+        .hero-content .tagline {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .hero-image {
+            display: flex;
+            justify-content: center;
+        }
+
+        .avatar {
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 8rem;
+            color: white;
+            box-shadow: 0 25px 50px -12px rgba(138, 21, 56, 0.25);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.875rem 2rem;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(138, 21, 56, 0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            margin-left: 1rem;
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Sections */
+        section {
+            padding: 5rem 2rem;
+        }
+
+        section .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* About */
+        .about {
+            background: var(--bg-alt);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        .about-text p {
+            margin-bottom: 1.5rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .info-list {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-list h3 {
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        .info-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .info-label {
+            font-weight: 600;
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            color: var(--text-light);
+        }
+
+        /* Skills */
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+        }
+
+        .skill-card {
+            background: var(--bg-alt);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .skill-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.1);
+        }
+
+        .skill-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .skill-card h3 {
+            margin-bottom: 0.75rem;
+        }
+
+        .skill-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Experience */
+        .experience {
+            background: var(--bg-alt);
+        }
+
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-left: 2.5rem;
+            padding-bottom: 2.5rem;
+        }
+
+        .timeline-item:last-child {
+            padding-bottom: 0;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -5px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--primary);
+            border: 2px solid var(--bg);
+        }
+
+        .timeline-date {
+            font-size: 0.875rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .timeline-item h3 {
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-company {
+            color: var(--text-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .timeline-item p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+
+        /* Contact */
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .contact-info h3 {
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--bg-alt);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+
+        .contact-item span {
+            color: var(--text-light);
+        }
+
+        .contact-form {
+            background: var(--bg-alt);
+            padding: 2.5rem;
+            border-radius: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            background: var(--input-bg);
+            color: var(--text);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--text);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .social-links a {
+            width: 45px;
+            height: 45px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav ul {
+                display: none;
+            }
+
+            .theme-toggle {
+                margin-left: 0;
+            }
+
+            .hero .container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-image {
+                order: -1;
+            }
+
+            .avatar {
+                width: 200px;
+                height: 200px;
+                font-size: 5rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-content {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-outline {
+                margin-left: 0;
+                margin-top: 1rem;
+                display: block;
+                text-align: center;
+            }
+
+            [dir="rtl"] .btn-outline {
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <a href="#" class="logo">AA</a>
+            <div style="display: flex; align-items: center;">
+                <ul>
+                    <li><a href="#about" data-i18n="nav.about">About</a></li>
+                    <li><a href="#skills" data-i18n="nav.skills">Skills</a></li>
+                    <li><a href="#experience" data-i18n="nav.experience">Experience</a></li>
+                    <li><a href="#contact" data-i18n="nav.contact">Contact</a></li>
+                </ul>
+                <button class="lang-toggle" id="langToggle" aria-label="Toggle language">AR</button>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">&#9790;</button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 data-i18n="hero.greeting">Hi, I'm <span>Abo Ali</span></h1>
+                <p class="tagline" data-i18n="hero.tagline">Full Stack Developer passionate about building beautiful, functional web applications that solve real-world problems.</p>
+                <a href="#contact" class="btn" data-i18n="hero.cta">Get In Touch</a>
+                <a href="#experience" class="btn btn-outline" data-i18n="hero.work">View My Work</a>
+            </div>
+            <div class="hero-image">
+                <div class="avatar">AA</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about">
+        <div class="container">
+            <h2 class="section-title" data-i18n="about.title">About Me</h2>
+            <p class="section-subtitle" data-i18n="about.subtitle">A brief introduction to who I am and what I do.</p>
+            <div class="about-content">
+                <div class="about-text">
+                    <p data-i18n="about.p1">I'm a passionate developer with over 5 years of experience in creating digital solutions. I specialize in building responsive web applications using modern technologies and best practices.</p>
+                    <p data-i18n="about.p2">My journey in tech started when I built my first website at 16. Since then, I've worked with startups and established companies, helping them bring their ideas to life through clean, efficient code.</p>
+                    <p data-i18n="about.p3">When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or enjoying a good book with a cup of coffee.</p>
+                </div>
+                <div class="info-list">
+                    <h3 data-i18n="about.quickInfo">Quick Info</h3>
+                    <div class="info-item">
+                        <span class="info-label" data-i18n="about.location">Location</span>
+                        <span class="info-value" data-i18n="about.locationValue">San Francisco, CA</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label" data-i18n="about.experience">Experience</span>
+                        <span class="info-value" data-i18n="about.experienceValue">5+ Years</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label" data-i18n="about.availability">Availability</span>
+                        <span class="info-value" data-i18n="about.availabilityValue">Open to Work</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label" data-i18n="about.languages">Languages</span>
+                        <span class="info-value" data-i18n="about.languagesValue">English, Arabic</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="skills">
+        <div class="container">
+            <h2 class="section-title" data-i18n="skills.title">Skills & Expertise</h2>
+            <p class="section-subtitle" data-i18n="skills.subtitle">Technologies and tools I work with to bring ideas to life.</p>
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-icon">&#60;/&#62;</div>
+                    <h3 data-i18n="skills.frontend">Frontend Development</h3>
+                    <p>React, Vue.js, TypeScript, HTML5, CSS3, Tailwind CSS</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">&#9881;</div>
+                    <h3 data-i18n="skills.backend">Backend Development</h3>
+                    <p>Node.js, Python, Express, Django, RESTful APIs, GraphQL</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">&#128202;</div>
+                    <h3 data-i18n="skills.database">Database & Cloud</h3>
+                    <p>PostgreSQL, MongoDB, Redis, AWS, Docker, Kubernetes</p>
+                </div>
+                <div class="skill-card">
+                    <div class="skill-icon">&#128736;</div>
+                    <h3 data-i18n="skills.tools">Tools & Workflow</h3>
+                    <p>Git, CI/CD, Agile, Testing</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="experience" class="experience">
+        <div class="container">
+            <h2 class="section-title" data-i18n="exp.title">Experience</h2>
+            <p class="section-subtitle" data-i18n="exp.subtitle">My professional journey and key accomplishments.</p>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date" data-i18n="exp.date1">2022 - Present</div>
+                    <h3 data-i18n="exp.role1">Senior Full Stack Developer</h3>
+                    <div class="timeline-company" data-i18n="exp.company1">Tech Innovations Inc.</div>
+                    <p data-i18n="exp.desc1">Leading development of enterprise web applications, mentoring junior developers, and implementing best practices for scalable architecture.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2020 - 2022</div>
+                    <h3 data-i18n="exp.role2">Full Stack Developer</h3>
+                    <div class="timeline-company" data-i18n="exp.company2">StartUp Labs</div>
+                    <p data-i18n="exp.desc2">Built and maintained multiple client-facing applications, improved performance by 40%, and collaborated with cross-functional teams.</p>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">2019 - 2020</div>
+                    <h3 data-i18n="exp.role3">Frontend Developer</h3>
+                    <div class="timeline-company" data-i18n="exp.company3">Digital Agency Co.</div>
+                    <p data-i18n="exp.desc3">Developed responsive websites and web applications for various clients, focusing on user experience and accessibility.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title" data-i18n="contact.title">Get In Touch</h2>
+            <p class="section-subtitle" data-i18n="contact.subtitle">Have a project in mind? Let's talk about how we can work together.</p>
+            <div class="contact-content">
+                <div class="contact-info">
+                    <h3 data-i18n="contact.info">Contact Information</h3>
+                    <div class="contact-item">
+                        <div class="contact-icon">&#9993;</div>
+                        <div>
+                            <strong data-i18n="contact.email">Email</strong><br>
+                            <span>abo.ali@example.com</span>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">&#9742;</div>
+                        <div>
+                            <strong data-i18n="contact.phone">Phone</strong><br>
+                            <span>+1 (555) 123-4567</span>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">&#9906;</div>
+                        <div>
+                            <strong data-i18n="contact.location">Location</strong><br>
+                            <span>San Francisco, CA</span>
+                        </div>
+                    </div>
+                </div>
+                <form class="contact-form" onsubmit="handleSubmit(event)">
+                    <div class="form-group">
+                        <label for="name" data-i18n="contact.yourName">Your Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email" data-i18n="contact.yourEmail">Your Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message" data-i18n="contact.message">Message</label>
+                        <textarea id="message" name="message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn" data-i18n="contact.send">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="social-links">
+            <a href="#" aria-label="LinkedIn">in</a>
+            <a href="#" aria-label="GitHub">GH</a>
+            <a href="#" aria-label="Twitter">X</a>
+        </div>
+        <p data-i18n="footer.copyright">&copy; 2025 Abo Ali. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Add scroll effect to navigation
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1)';
+            } else {
+                nav.style.boxShadow = 'none';
+            }
+        });
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+
+        // Check for saved theme preference or default to light
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        html.setAttribute('data-theme', savedTheme);
+        updateToggleIcon(savedTheme);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateToggleIcon(newTheme);
+        });
+
+        function updateToggleIcon(theme) {
+            themeToggle.innerHTML = theme === 'dark' ? '&#9788;' : '&#9790;';
+        }
+
+        // Translations
+        const translations = {
+            en: {
+                'nav.about': 'About',
+                'nav.skills': 'Skills',
+                'nav.experience': 'Experience',
+                'nav.contact': 'Contact',
+                'hero.greeting': 'Hi, I\'m <span>Abo Ali</span>',
+                'hero.tagline': 'Full Stack Developer passionate about building beautiful, functional web applications that solve real-world problems.',
+                'hero.cta': 'Get In Touch',
+                'hero.work': 'View My Work',
+                'about.title': 'About Me',
+                'about.subtitle': 'A brief introduction to who I am and what I do.',
+                'about.p1': 'I\'m a passionate developer with over 5 years of experience in creating digital solutions. I specialize in building responsive web applications using modern technologies and best practices.',
+                'about.p2': 'My journey in tech started when I built my first website at 16. Since then, I\'ve worked with startups and established companies, helping them bring their ideas to life through clean, efficient code.',
+                'about.p3': 'When I\'m not coding, you can find me exploring new technologies, contributing to open-source projects, or enjoying a good book with a cup of coffee.',
+                'about.quickInfo': 'Quick Info',
+                'about.location': 'Location',
+                'about.locationValue': 'San Francisco, CA',
+                'about.experience': 'Experience',
+                'about.experienceValue': '5+ Years',
+                'about.availability': 'Availability',
+                'about.availabilityValue': 'Open to Work',
+                'about.languages': 'Languages',
+                'about.languagesValue': 'English, Arabic',
+                'skills.title': 'Skills & Expertise',
+                'skills.subtitle': 'Technologies and tools I work with to bring ideas to life.',
+                'skills.frontend': 'Frontend Development',
+                'skills.backend': 'Backend Development',
+                'skills.database': 'Database & Cloud',
+                'skills.tools': 'Tools & Workflow',
+                'exp.title': 'Experience',
+                'exp.subtitle': 'My professional journey and key accomplishments.',
+                'exp.date1': '2022 - Present',
+                'exp.role1': 'Senior Full Stack Developer',
+                'exp.company1': 'Tech Innovations Inc.',
+                'exp.desc1': 'Leading development of enterprise web applications, mentoring junior developers, and implementing best practices for scalable architecture.',
+                'exp.role2': 'Full Stack Developer',
+                'exp.company2': 'StartUp Labs',
+                'exp.desc2': 'Built and maintained multiple client-facing applications, improved performance by 40%, and collaborated with cross-functional teams.',
+                'exp.role3': 'Frontend Developer',
+                'exp.company3': 'Digital Agency Co.',
+                'exp.desc3': 'Developed responsive websites and web applications for various clients, focusing on user experience and accessibility.',
+                'contact.title': 'Get In Touch',
+                'contact.subtitle': 'Have a project in mind? Let\'s talk about how we can work together.',
+                'contact.info': 'Contact Information',
+                'contact.email': 'Email',
+                'contact.phone': 'Phone',
+                'contact.location': 'Location',
+                'contact.yourName': 'Your Name',
+                'contact.yourEmail': 'Your Email',
+                'contact.message': 'Message',
+                'contact.send': 'Send Message',
+                'footer.copyright': '© 2025 Abo Ali. All rights reserved.',
+                'form.thanks': 'Thank you, {name}! Your message has been received. I\'ll get back to you soon.'
+            },
+            ar: {
+                'nav.about': 'نبذة عني',
+                'nav.skills': 'المهارات',
+                'nav.experience': 'الخبرات',
+                'nav.contact': 'تواصل معي',
+                'hero.greeting': 'مرحباً، أنا <span>أبو علي</span>',
+                'hero.tagline': 'مطور Full Stack شغوف ببناء تطبيقات ويب جميلة وعملية تحل مشاكل العالم الحقيقي.',
+                'hero.cta': 'تواصل معي',
+                'hero.work': 'شاهد أعمالي',
+                'about.title': 'نبذة عني',
+                'about.subtitle': 'مقدمة موجزة عن شخصيتي وما أقوم به.',
+                'about.p1': 'أنا مطور شغوف بأكثر من 5 سنوات من الخبرة في إنشاء الحلول الرقمية. أتخصص في بناء تطبيقات الويب المتجاوبة باستخدام التقنيات الحديثة وأفضل الممارسات.',
+                'about.p2': 'بدأت رحلتي في التقنية عندما قمت ببناء أول موقع ويب لي في سن 16. منذ ذلك الحين، عملت مع الشركات الناشئة والشركات الراسخة، لمساعدتهم على تحويل أفكارهم إلى واقع من خلال كود نظيف وفعال.',
+                'about.p3': 'عندما لا أكون في البرمجة، يمكنك أن تجدني أستكشف تقنيات جديدة، أو أساهم في مشاريع مفتوحة المصدر، أو أستمتع بكتاب جيد مع فنجان من القهوة.',
+                'about.quickInfo': 'معلومات سريعة',
+                'about.location': 'الموقع',
+                'about.locationValue': 'سان فرانسيسكو، كاليفورنيا',
+                'about.experience': 'الخبرة',
+                'about.experienceValue': '+5 سنوات',
+                'about.availability': 'التوفر',
+                'about.availabilityValue': 'متاح للعمل',
+                'about.languages': 'اللغات',
+                'about.languagesValue': 'العربية، الإنجليزية',
+                'skills.title': 'المهارات والخبرات',
+                'skills.subtitle': 'التقنيات والأدوات التي أعمل بها لتحويل الأفكار إلى واقع.',
+                'skills.frontend': 'تطوير الواجهات الأمامية',
+                'skills.backend': 'تطوير الخوادم',
+                'skills.database': 'قواعد البيانات والسحابة',
+                'skills.tools': 'الأدوات وسير العمل',
+                'exp.title': 'الخبرات',
+                'exp.subtitle': 'مسيرتي المهنية وأبرز إنجازاتي.',
+                'exp.date1': '2022 - الحالي',
+                'exp.role1': 'مطور Full Stack أول',
+                'exp.company1': 'شركة Tech Innovations',
+                'exp.desc1': 'قيادة تطوير تطبيقات الويب للمؤسسات، وتوجيه المطورين المبتدئين، وتطبيق أفضل الممارسات للبنية القابلة للتوسع.',
+                'exp.role2': 'مطور Full Stack',
+                'exp.company2': 'StartUp Labs',
+                'exp.desc2': 'بناء وصيانة تطبيقات متعددة للعملاء، وتحسين الأداء بنسبة 40%، والتعاون مع فرق متعددة التخصصات.',
+                'exp.role3': 'مطور واجهات أمامية',
+                'exp.company3': 'Digital Agency Co.',
+                'exp.desc3': 'تطوير مواقع وتطبيقات ويب متجاوبة لعملاء متنوعين، مع التركيز على تجربة المستخدم وسهولة الوصول.',
+                'contact.title': 'تواصل معي',
+                'contact.subtitle': 'هل لديك مشروع في بالك؟ دعنا نتحدث عن كيفية العمل معاً.',
+                'contact.info': 'معلومات التواصل',
+                'contact.email': 'البريد الإلكتروني',
+                'contact.phone': 'الهاتف',
+                'contact.location': 'الموقع',
+                'contact.yourName': 'اسمك',
+                'contact.yourEmail': 'بريدك الإلكتروني',
+                'contact.message': 'الرسالة',
+                'contact.send': 'إرسال الرسالة',
+                'footer.copyright': '© 2025 أبو علي. جميع الحقوق محفوظة.',
+                'form.thanks': 'شكراً لك، {name}! تم استلام رسالتك. سأعود إليك قريباً.'
+            }
+        };
+
+        // Language toggle
+        const langToggle = document.getElementById('langToggle');
+        let currentLang = localStorage.getItem('lang') || 'en';
+
+        setLanguage(currentLang);
+
+        langToggle.addEventListener('click', () => {
+            currentLang = currentLang === 'en' ? 'ar' : 'en';
+            localStorage.setItem('lang', currentLang);
+            setLanguage(currentLang);
+        });
+
+        function setLanguage(lang) {
+            document.documentElement.lang = lang;
+            document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+            langToggle.textContent = lang === 'en' ? 'AR' : 'EN';
+
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    el.innerHTML = translations[lang][key];
+                }
+            });
+        }
+
+        // Update form handler for translations
+        function handleSubmit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const name = form.name.value;
+            const message = translations[currentLang]['form.thanks'].replace('{name}', name);
+            alert(message);
+            form.reset();
+        }
+    </script>
+</body>
+</html>
