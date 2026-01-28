@@ -7,6 +7,34 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    {% if prediction %}
+    <div class="popup-overlay {% if prediction.survived %}survival{% else %}death{% endif %}" id="predictionPopup">
+        <div class="popup-content {% if not prediction.survived %}death-popup{% endif %}">
+            <button class="popup-close" id="popupClose">&times;</button>
+            <div class="popup-image-container">
+                {% if form_data and form_data.sex == 'female' %}
+                <img src="{{ url_for('static', filename='female.png') }}" alt="Female Passenger" class="popup-image {% if not prediction.survived %}death-image{% endif %}">
+                {% else %}
+                <img src="{{ url_for('static', filename='male.png') }}" alt="Male Passenger" class="popup-image {% if not prediction.survived %}death-image{% endif %}">
+                {% endif %}
+            </div>
+            {% if prediction.survived %}
+            <h2 class="popup-title" data-en="Congratulations!" data-ar="تهانينا!">Congratulations!</h2>
+            <p class="popup-message" data-en="You would have survived the Titanic!" data-ar="كنت ستنجو من تيتانيك!">You would have survived the Titanic!</p>
+            <div class="popup-confetti">
+                <span>🎉</span><span>⭐</span><span>✨</span><span>🎊</span><span>🌟</span>
+            </div>
+            {% else %}
+            <h2 class="popup-title death-title" data-en="Rest in Peace" data-ar="ارقد بسلام">Rest in Peace</h2>
+            <p class="popup-message" data-en="Unfortunately, you would not have survived..." data-ar="للأسف، لم تكن لتنجو...">Unfortunately, you would not have survived...</p>
+            <div class="popup-skulls">
+                <span>💀</span><span>⚰️</span><span>🥀</span><span>⚰️</span><span>💀</span>
+            </div>
+            <div class="blood-overlay"></div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
     <div class="controls">
         <button class="lang-toggle" id="langToggle" aria-label="Toggle language">
             <span class="lang-text">عربي</span>
@@ -180,6 +208,36 @@
             // Update all translatable elements
             document.querySelectorAll('[data-en][data-ar]').forEach(el => {
                 el.textContent = el.getAttribute(`data-${lang}`);
+            });
+        }
+
+        // Prediction Popup
+        const predictionPopup = document.getElementById('predictionPopup');
+        const popupClose = document.getElementById('popupClose');
+
+        if (predictionPopup) {
+            // Show popup with animation
+            setTimeout(() => {
+                predictionPopup.classList.add('active');
+            }, 300);
+
+            // Close popup
+            popupClose.addEventListener('click', () => {
+                predictionPopup.classList.remove('active');
+            });
+
+            // Close on overlay click
+            predictionPopup.addEventListener('click', (e) => {
+                if (e.target === predictionPopup) {
+                    predictionPopup.classList.remove('active');
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    predictionPopup.classList.remove('active');
+                }
             });
         }
     </script>

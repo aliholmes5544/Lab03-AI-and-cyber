@@ -442,6 +442,256 @@ body[data-theme="dark"] .not-survived {
     font-size: 0.8rem;
 }
 
+/* Survival Popup Modal */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.popup-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-content {
+    background: var(--container-bg);
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    transform: scale(0.8) translateY(20px);
+    transition: all 0.4s ease;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+}
+
+.popup-overlay.active .popup-content {
+    transform: scale(1) translateY(0);
+}
+
+.popup-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 35px;
+    height: 35px;
+    border: none;
+    background: var(--border-color);
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+[dir="rtl"] .popup-close {
+    right: auto;
+    left: 15px;
+}
+
+.popup-close:hover {
+    background: var(--qatar-primary);
+    color: white;
+}
+
+.popup-image-container {
+    margin-bottom: 20px;
+}
+
+.popup-image {
+    width: 180px;
+    height: 180px;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 4px solid var(--qatar-primary);
+    animation: popIn 0.5s ease 0.2s both;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.popup-title {
+    color: var(--qatar-primary);
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    animation: slideUp 0.5s ease 0.3s both;
+}
+
+.popup-message {
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    animation: slideUp 0.5s ease 0.4s both;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.popup-confetti {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    font-size: 2rem;
+    animation: slideUp 0.5s ease 0.5s both;
+}
+
+.popup-confetti span {
+    animation: float 2s ease-in-out infinite;
+}
+
+.popup-confetti span:nth-child(1) { animation-delay: 0s; }
+.popup-confetti span:nth-child(2) { animation-delay: 0.2s; }
+.popup-confetti span:nth-child(3) { animation-delay: 0.4s; }
+.popup-confetti span:nth-child(4) { animation-delay: 0.6s; }
+.popup-confetti span:nth-child(5) { animation-delay: 0.8s; }
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* Death Popup Styles */
+.popup-overlay.death {
+    background: rgba(30, 0, 0, 0.9);
+}
+
+.death-popup {
+    background: linear-gradient(180deg, #1a0000 0%, #2d0000 100%);
+    border: 2px solid #8B0000;
+}
+
+body[data-theme="dark"] .death-popup {
+    background: linear-gradient(180deg, #0d0000 0%, #1a0000 100%);
+}
+
+.death-image {
+    border-color: #8B0000 !important;
+    filter: grayscale(70%) sepia(30%);
+    animation: deathPulse 2s ease-in-out infinite !important;
+}
+
+@keyframes deathPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(139, 0, 0, 0.5);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 40px rgba(139, 0, 0, 0.8);
+    }
+}
+
+.death-title {
+    color: #DC143C !important;
+    text-shadow: 0 0 10px rgba(220, 20, 60, 0.5);
+}
+
+.death-popup .popup-message {
+    color: #999 !important;
+}
+
+.popup-skulls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    font-size: 2rem;
+    animation: slideUp 0.5s ease 0.5s both;
+}
+
+.popup-skulls span {
+    animation: skullFloat 3s ease-in-out infinite;
+}
+
+.popup-skulls span:nth-child(1) { animation-delay: 0s; }
+.popup-skulls span:nth-child(2) { animation-delay: 0.3s; }
+.popup-skulls span:nth-child(3) { animation-delay: 0.6s; }
+.popup-skulls span:nth-child(4) { animation-delay: 0.9s; }
+.popup-skulls span:nth-child(5) { animation-delay: 1.2s; }
+
+@keyframes skullFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    25% { transform: translateY(-5px) rotate(-5deg); }
+    75% { transform: translateY(-5px) rotate(5deg); }
+}
+
+.blood-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    pointer-events: none;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.blood-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg,
+        transparent 0%,
+        #8B0000 20%,
+        #DC143C 50%,
+        #8B0000 80%,
+        transparent 100%
+    );
+    animation: bloodPulse 2s ease-in-out infinite;
+}
+
+@keyframes bloodPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.death-popup .popup-close {
+    background: #3a0000;
+    color: #DC143C;
+}
+
+.death-popup .popup-close:hover {
+    background: #DC143C;
+    color: white;
+}
+
 /* RTL Support */
 [dir="rtl"] {
     font-family: 'Segoe UI', Tahoma, 'Arial', sans-serif;
