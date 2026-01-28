@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Titanic Survival Predictor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="controls">
+        <button class="lang-toggle" id="langToggle" aria-label="Toggle language">
+            <span class="lang-text">عربي</span>
+        </button>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+        </button>
+    </div>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Qatar.svg" alt="Qatar Flag" class="qatar-logo">
+            </div>
+            <h1 data-en="Titanic Survival Predictor" data-ar="متنبئ النجاة من تيتانيك">Titanic Survival Predictor</h1>
+            <p class="subtitle" data-en="Machine Learning Classification Model" data-ar="نموذج تصنيف التعلم الآلي">Machine Learning Classification Model</p>
+        </div>
+
+        {% if error %}
+        <div class="alert error">
+            <h2 data-en="Error" data-ar="خطأ">Error</h2>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+
+        {% if prediction %}
+        <div class="alert {% if prediction.survived %}success{% else %}danger{% endif %}">
+            <h2 data-en="Prediction Result" data-ar="نتيجة التنبؤ">Prediction Result</h2>
+            <p class="result">
+                {% if prediction.survived %}
+                    <span class="survived" data-en="Survived" data-ar="نجا">Survived</span>
+                {% else %}
+                    <span class="not-survived" data-en="Did Not Survive" data-ar="لم ينجُ">Did Not Survive</span>
+                {% endif %}
+            </p>
+            <p class="probability">
+                <span data-en="Survival Probability:" data-ar="احتمال النجاة:">Survival Probability:</span> {{ "%.1f"|format(prediction.probability * 100) }}%
+            </p>
+            <div class="probability-bar">
+                <div class="probability-fill" style="width: {{ prediction.probability * 100 }}%"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <form action="/predict" method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pclass" data-en="Passenger Class" data-ar="درجة الراكب">Passenger Class</label>
+                    <select name="pclass" id="pclass" required>
+                        <option value="1" {% if form_data and form_data.pclass == '1' %}selected{% endif %} data-en="1st Class" data-ar="الدرجة الأولى">1st Class</option>
+                        <option value="2" {% if form_data and form_data.pclass == '2' %}selected{% endif %} data-en="2nd Class" data-ar="الدرجة الثانية">2nd Class</option>
+                        <option value="3" {% if form_data and form_data.pclass == '3' %}selected{% endif %} {% if not form_data %}selected{% endif %} data-en="3rd Class" data-ar="الدرجة الثالثة">3rd Class</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="sex" data-en="Sex" data-ar="الجنس">Sex</label>
+                    <select name="sex" id="sex" required>
+                        <option value="male" {% if form_data and form_data.sex == 'male' %}selected{% endif %} data-en="Male" data-ar="ذكر">Male</option>
+                        <option value="female" {% if form_data and form_data.sex == 'female' %}selected{% endif %} data-en="Female" data-ar="أنثى">Female</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="age" data-en="Age" data-ar="العمر">Age</label>
+                    <input type="number" name="age" id="age" min="0" max="120" step="0.5"
+                           value="{{ form_data.age if form_data else '30' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="fare" data-en="Fare" data-ar="السعر">Fare</label>
+                    <input type="number" name="fare" id="fare" min="0" step="0.01"
+                           value="{{ form_data.fare if form_data else '32.00' }}" required>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="sibsp" data-en="Siblings / Spouses" data-ar="الأشقاء / الأزواج">Siblings / Spouses</label>
+                    <input type="number" name="sibsp" id="sibsp" min="0" max="10"
+                           value="{{ form_data.sibsp if form_data else '0' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="parch" data-en="Parents / Children" data-ar="الوالدين / الأطفال">Parents / Children</label>
+                    <input type="number" name="parch" id="parch" min="0" max="10"
+                           value="{{ form_data.parch if form_data else '0' }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="embarked" data-en="Port of Embarkation" data-ar="ميناء الصعود">Port of Embarkation</label>
+                <select name="embarked" id="embarked" required>
+                    <option value="S" {% if form_data and form_data.embarked == 'S' %}selected{% endif %} data-en="Southampton (S)" data-ar="ساوثهامبتون (S)">Southampton (S)</option>
+                    <option value="C" {% if form_data and form_data.embarked == 'C' %}selected{% endif %} data-en="Cherbourg (C)" data-ar="شيربورغ (C)">Cherbourg (C)</option>
+                    <option value="Q" {% if form_data and form_data.embarked == 'Q' %}selected{% endif %} data-en="Queenstown (Q)" data-ar="كوينزتاون (Q)">Queenstown (Q)</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn" data-en="Predict Survival" data-ar="توقع النجاة">Predict Survival</button>
+        </form>
+
+        <div class="footer" data-en="Powered by Scikit-learn RandomForest Classifier" data-ar="مدعوم بواسطة Scikit-learn RandomForest">
+            Powered by Scikit-learn RandomForest Classifier
+        </div>
+    </div>
+
+    <script>
+        const themeToggle = document.getElementById('themeToggle');
+        const langToggle = document.getElementById('langToggle');
+        const body = document.body;
+
+        // Check for saved theme preference or default to light
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', savedTheme);
+
+        // Check for saved language preference or default to English
+        const savedLang = localStorage.getItem('lang') || 'en';
+        setLanguage(savedLang);
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        });
+
+        langToggle.addEventListener('click', () => {
+            const currentLang = body.getAttribute('data-lang');
+            const newLang = currentLang === 'ar' ? 'en' : 'ar';
+            setLanguage(newLang);
+            localStorage.setItem('lang', newLang);
+        });
+
+        function setLanguage(lang) {
+            body.setAttribute('data-lang', lang);
+            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', lang);
+
+            // Update toggle button text
+            const langText = langToggle.querySelector('.lang-text');
+            langText.textContent = lang === 'ar' ? 'English' : 'عربي';
+
+            // Update all translatable elements
+            document.querySelectorAll('[data-en][data-ar]').forEach(el => {
+                el.textContent = el.getAttribute(`data-${lang}`);
+            });
+        }
+    </script>
+</body>
+</html>
