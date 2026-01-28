@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Background Circle -->
+  <circle cx="50" cy="50" r="45" fill="#FFEBEE"/>
+
+  <!-- Skull Shape -->
+  <path d="M25 45 Q25 20 50 20 Q75 20 75 45 L75 55 Q75 70 65 75 L65 85 Q65 90 60 90 L40 90 Q35 90 35 85 L35 75 Q25 70 25 55 Z" fill="#ECEFF1"/>
+
+  <!-- Skull Outline/Shadow -->
+  <path d="M25 45 Q25 20 50 20 Q75 20 75 45 L75 55 Q75 70 65 75 L65 85 Q65 90 60 90 L40 90 Q35 90 35 85 L35 75 Q25 70 25 55 Z" stroke="#B71C1C" stroke-width="2" fill="none"/>
+
+  <!-- Left Eye Socket -->
+  <ellipse cx="38" cy="45" rx="8" ry="10" fill="#B71C1C"/>
+
+  <!-- Right Eye Socket -->
+  <ellipse cx="62" cy="45" rx="8" ry="10" fill="#B71C1C"/>
+
+  <!-- Nose Hole -->
+  <path d="M47 58 L50 65 L53 58 Z" fill="#B71C1C"/>
+
+  <!-- Teeth -->
+  <rect x="38" y="75" width="6" height="10" rx="1" fill="#B71C1C"/>
+  <rect x="47" y="75" width="6" height="10" rx="1" fill="#B71C1C"/>
+  <rect x="56" y="75" width="6" height="10" rx="1" fill="#B71C1C"/>
+
+  <!-- Blood Drops -->
+  <ellipse cx="30" cy="60" rx="4" ry="6" fill="#D32F2F"/>
+  <ellipse cx="70" cy="55" rx="3" ry="5" fill="#D32F2F"/>
+  <ellipse cx="75" cy="70" rx="3" ry="4" fill="#C62828"/>
+</svg>

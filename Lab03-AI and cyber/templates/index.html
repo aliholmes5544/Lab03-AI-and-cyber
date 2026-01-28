@@ -47,13 +47,26 @@
         {% if prediction %}
         <div class="alert {% if prediction.survived %}success{% else %}danger{% endif %}">
             <h2 data-en="Prediction Result" data-ar="نتيجة التنبؤ">Prediction Result</h2>
-            <p class="result">
+            <div class="result-container">
                 {% if prediction.survived %}
-                    <span class="survived" data-en="Survived" data-ar="نجا">Survived</span>
+                    <img src="{{ url_for('static', filename='male-survivor.svg') }}" alt="Survivor" class="result-icon survivor-icon">
+                    <p class="result">
+                        <span class="survived" data-en="Survived" data-ar="نجا">Survived</span>
+                    </p>
                 {% else %}
-                    <span class="not-survived" data-en="Did Not Survive" data-ar="لم ينجُ">Did Not Survive</span>
+                    <img src="{{ url_for('static', filename='skull-death.svg') }}" alt="Did not survive" class="result-icon death-icon">
+                    <p class="result">
+                        <span class="not-survived" data-en="Did Not Survive" data-ar="لم ينجُ">Did Not Survive</span>
+                    </p>
+                    <div class="blood-drips">
+                        <div class="blood-drip"></div>
+                        <div class="blood-drip"></div>
+                        <div class="blood-drip"></div>
+                        <div class="blood-drip"></div>
+                        <div class="blood-drip"></div>
+                    </div>
                 {% endif %}
-            </p>
+            </div>
             <p class="probability">
                 <span data-en="Survival Probability:" data-ar="احتمال النجاة:">Survival Probability:</span> {{ "%.1f"|format(prediction.probability * 100) }}%
             </p>
