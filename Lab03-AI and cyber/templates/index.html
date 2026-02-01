@@ -7,38 +7,133 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <!-- Page 1: Language Selection -->
+    <div class="intro-page" id="langPage">
+        <div class="intro-container">
+            <div class="intro-logo">
+                <img src="{{ url_for('static', filename='titanic-logo.svg') }}" alt="Titanic Logo">
+            </div>
+            <h1 class="intro-title">Welcome / مرحباً</h1>
+            <p class="intro-subtitle">Select your language / اختر لغتك</p>
+            <div class="lang-buttons">
+                <button class="lang-btn" id="selectEnglish">
+                    <img class="lang-flag-img" src="{{ url_for('static', filename='img/british_flag.png') }}" alt="English">
+                    <span>English</span>
+                </button>
+                <button class="lang-btn" id="selectArabic">
+                    <img class="lang-flag-img" src="{{ url_for('static', filename='img/qatar_flag.png') }}" alt="العربية">
+                    <span>العربية</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page 2: Titanic Story Summary -->
+    <div class="intro-page hidden" id="storyPage">
+        <div class="intro-container story-container">
+            <h1 class="story-title" data-en="The Titanic Story" data-ar="قصة تيتانيك">The Titanic Story</h1>
+            <div class="story-content">
+                <p data-en="On April 15, 1912, the RMS Titanic, the largest and most luxurious ship of its time, sank in the North Atlantic Ocean after colliding with an iceberg during her maiden voyage from Southampton to New York City."
+                   data-ar="في 15 أبريل 1912، غرقت سفينة آر إم إس تيتانيك، أكبر وأفخم سفينة في عصرها، في المحيط الأطلسي الشمالي بعد اصطدامها بجبل جليدي خلال رحلتها الأولى من ساوثهامبتون إلى مدينة نيويورك.">
+                    On April 15, 1912, the RMS Titanic, the largest and most luxurious ship of its time, sank in the North Atlantic Ocean after colliding with an iceberg during her maiden voyage from Southampton to New York City.
+                </p>
+                <p data-en="Of the estimated 2,224 passengers and crew aboard, more than 1,500 died, making it one of the deadliest peacetime maritime disasters in history."
+                   data-ar="من بين ما يقدر بـ 2,224 راكباً وطاقماً على متنها، توفي أكثر من 1,500 شخص، مما جعلها واحدة من أكثر الكوارث البحرية دموية في وقت السلم في التاريخ.">
+                    Of the estimated 2,224 passengers and crew aboard, more than 1,500 died, making it one of the deadliest peacetime maritime disasters in history.
+                </p>
+                <p data-en="The disaster shocked the world and led to major improvements in maritime safety regulations."
+                   data-ar="صدمت الكارثة العالم وأدت إلى تحسينات كبيرة في لوائح السلامة البحرية.">
+                    The disaster shocked the world and led to major improvements in maritime safety regulations.
+                </p>
+                <p class="story-question" data-en="Would you have survived the Titanic? Let's find out!"
+                   data-ar="هل كنت ستنجو من تيتانيك؟ لنكتشف!">
+                    Would you have survived the Titanic? Let's find out!
+                </p>
+            </div>
+            <button class="ok-btn" id="okBtn" data-en="OK" data-ar="حسناً">OK</button>
+        </div>
+    </div>
+
+    <!-- Main App (hidden initially) -->
+    <div class="main-app hidden" id="mainApp">
     {% if prediction %}
-    <div class="popup-overlay {% if prediction.survived %}survival{% else %}death{% endif %}" id="predictionPopup">
-        <div class="popup-content {% if not prediction.survived %}death-popup{% endif %}">
-            <button class="popup-close" id="popupClose">&times;</button>
-            <div class="popup-image-container">
-                {% if form_data and form_data.sex == 'female' %}
-                <img src="{{ url_for('static', filename='female.png') }}" alt="Female Passenger" class="popup-image {% if not prediction.survived %}death-image{% endif %}">
+    <div class="modal-backdrop {% if prediction.survived %}survival{% else %}death{% endif %}" id="predictionModal" aria-hidden="true">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                {% if prediction.survived %}
+                <h2 id="modalTitle" data-en="🎉 Congratulations! You Survived!" data-ar="🎉 تهانينا! لقد نجوت!">🎉 Congratulations! You Survived!</h2>
                 {% else %}
-                <img src="{{ url_for('static', filename='male.png') }}" alt="Male Passenger" class="popup-image {% if not prediction.survived %}death-image{% endif %}">
+                <h2 id="modalTitle" data-en="💀 Rest in Peace" data-ar="💀 ارقد بسلام">💀 Rest in Peace</h2>
                 {% endif %}
+                <button class="close-btn" id="closeModalBtn" aria-label="Close">&times;</button>
             </div>
-            {% if prediction.survived %}
-            <h2 class="popup-title" data-en="Congratulations!" data-ar="تهانينا!">Congratulations!</h2>
-            <p class="popup-message" data-en="You would have survived the Titanic!" data-ar="كنت ستنجو من تيتانيك!">You would have survived the Titanic!</p>
-            <div class="popup-confetti">
-                <span>🎉</span><span>⭐</span><span>✨</span><span>🎊</span><span>🌟</span>
+
+            <div class="modal-body">
+                <div class="modal-row">
+                    <div class="modal-card">
+                        <div class="image-wrap">
+                            {% if prediction.survived %}
+                                {% if form_data.sex == 'female' %}
+                                <img id="genderImg"
+                                     class="survival-image"
+                                     alt="Female survivor"
+                                     src="{{ url_for('static', filename='img/survivor_female.png') }}">
+                                {% else %}
+                                <img id="genderImg"
+                                     class="survival-image"
+                                     alt="Male survivor"
+                                     src="{{ url_for('static', filename='img/survivor_male.png') }}">
+                                {% endif %}
+                            {% else %}
+                                <img id="genderImg"
+                                     class="death-image"
+                                     alt="Did not survive"
+                                     src="{{ url_for('static', filename='img/drowning_dark.png') }}">
+                            {% endif %}
+                        </div>
+                        <p class="modal-hint" data-en="Passenger: {{ 'Female' if form_data.sex == 'female' else 'Male' }}" data-ar="الراكب: {{ 'أنثى' if form_data.sex == 'female' else 'ذكر' }}">
+                            Passenger: {{ 'Female' if form_data.sex == 'female' else 'Male' }}
+                        </p>
+                    </div>
+
+                    <div class="modal-card">
+                        {% if prediction.survived %}
+                        <p style="font-size: 16px; margin-bottom: 10px; color: #166534;" data-en="You would have survived the Titanic disaster!" data-ar="كنت ستنجو من كارثة تيتانيك!">
+                            You would have survived the Titanic disaster!
+                        </p>
+                        <div class="popup-confetti">
+                            <span>🎉</span><span>⭐</span><span>✨</span><span>🎊</span><span>🌟</span>
+                        </div>
+                        {% else %}
+                        <p style="font-size: 16px; margin-bottom: 10px;" data-en="Unfortunately, you would not have survived..." data-ar="للأسف، لم تكن لتنجو...">
+                            Unfortunately, you would not have survived...
+                        </p>
+                        <div class="popup-skulls">
+                            <span>💀</span><span>⚰️</span><span>🥀</span><span>⚰️</span><span>💀</span>
+                        </div>
+                        <div class="blood-overlay"></div>
+                        {% endif %}
+
+                        <div class="modal-probability">
+                            <p class="probability-text" data-en="Survival Probability: {{ '%.1f'|format(prediction.probability * 100) }}%" data-ar="احتمال النجاة: {{ '%.1f'|format(prediction.probability * 100) }}%">
+                                Survival Probability: {{ "%.1f"|format(prediction.probability * 100) }}%
+                            </p>
+                            <div class="probability-bar">
+                                <div class="probability-fill" style="width: {{ prediction.probability * 100 }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            {% else %}
-            <h2 class="popup-title death-title" data-en="Rest in Peace" data-ar="ارقد بسلام">Rest in Peace</h2>
-            <p class="popup-message" data-en="Unfortunately, you would not have survived..." data-ar="للأسف، لم تكن لتنجو...">Unfortunately, you would not have survived...</p>
-            <div class="popup-skulls">
-                <span>💀</span><span>⚰️</span><span>🥀</span><span>⚰️</span><span>💀</span>
+
+            <div class="modal-footer">
+                <button class="modal-btn" id="closeBtn" data-en="Close" data-ar="إغلاق">Close</button>
+                <button class="modal-btn primary" id="tryAgainBtn" data-en="Try Again" data-ar="حاول مرة أخرى">Try Again</button>
             </div>
-            <div class="blood-overlay"></div>
-            {% endif %}
         </div>
     </div>
     {% endif %}
     <div class="controls">
-        <button class="lang-toggle" id="langToggle" aria-label="Toggle language">
-            <span class="lang-text">عربي</span>
-        </button>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
         <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="5"></circle>
@@ -59,7 +154,7 @@
     <div class="container">
         <div class="header">
             <div class="logo-container">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/65/Flag_of_Qatar.svg" alt="Qatar Flag" class="qatar-logo">
+                <img src="{{ url_for('static', filename='titanic-logo.svg') }}" alt="Titanic Logo" class="qatar-logo">
             </div>
             <h1 data-en="Titanic Survival Predictor" data-ar="متنبئ النجاة من تيتانيك">Titanic Survival Predictor</h1>
             <p class="subtitle" data-en="Machine Learning Classification Model" data-ar="نموذج تصنيف التعلم الآلي">Machine Learning Classification Model</p>
@@ -168,19 +263,54 @@
             Powered by Scikit-learn RandomForest Classifier
         </div>
     </div>
+    </div> <!-- Close main-app -->
 
     <script>
         const themeToggle = document.getElementById('themeToggle');
-        const langToggle = document.getElementById('langToggle');
         const body = document.body;
+
+        // Intro pages elements
+        const langPage = document.getElementById('langPage');
+        const storyPage = document.getElementById('storyPage');
+        const mainApp = document.getElementById('mainApp');
+        const selectEnglish = document.getElementById('selectEnglish');
+        const selectArabic = document.getElementById('selectArabic');
+        const okBtn = document.getElementById('okBtn');
+
+        // Set language function
+        function setLanguage(lang) {
+            body.setAttribute('data-lang', lang);
+            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
+            document.documentElement.setAttribute('lang', lang);
+
+            // Update all translatable elements
+            document.querySelectorAll('[data-en][data-ar]').forEach(el => {
+                el.textContent = el.getAttribute(`data-${lang}`);
+            });
+        }
+
+        // Language selection handlers
+        selectEnglish.addEventListener('click', () => {
+            setLanguage('en');
+            langPage.classList.add('hidden');
+            storyPage.classList.remove('hidden');
+        });
+
+        selectArabic.addEventListener('click', () => {
+            setLanguage('ar');
+            langPage.classList.add('hidden');
+            storyPage.classList.remove('hidden');
+        });
+
+        // OK button handler
+        okBtn.addEventListener('click', () => {
+            storyPage.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+        });
 
         // Check for saved theme preference or default to light
         const savedTheme = localStorage.getItem('theme') || 'light';
         body.setAttribute('data-theme', savedTheme);
-
-        // Check for saved language preference or default to English
-        const savedLang = localStorage.getItem('lang') || 'en';
-        setLanguage(savedLang);
 
         themeToggle.addEventListener('click', () => {
             const currentTheme = body.getAttribute('data-theme');
@@ -189,54 +319,55 @@
             localStorage.setItem('theme', newTheme);
         });
 
-        langToggle.addEventListener('click', () => {
-            const currentLang = body.getAttribute('data-lang');
-            const newLang = currentLang === 'ar' ? 'en' : 'ar';
-            setLanguage(newLang);
-            localStorage.setItem('lang', newLang);
-        });
+        // Prediction Modal
+        const predictionModal = document.getElementById('predictionModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const closeBtn = document.getElementById('closeBtn');
+        const tryAgainBtn = document.getElementById('tryAgainBtn');
 
-        function setLanguage(lang) {
-            body.setAttribute('data-lang', lang);
-            document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-            document.documentElement.setAttribute('lang', lang);
-
-            // Update toggle button text
-            const langText = langToggle.querySelector('.lang-text');
-            langText.textContent = lang === 'ar' ? 'English' : 'عربي';
-
-            // Update all translatable elements
-            document.querySelectorAll('[data-en][data-ar]').forEach(el => {
-                el.textContent = el.getAttribute(`data-${lang}`);
-            });
+        function openModal() {
+            if (predictionModal) {
+                predictionModal.classList.add('is-open');
+                predictionModal.setAttribute('aria-hidden', 'false');
+                document.body.style.overflow = 'hidden';
+            }
         }
 
-        // Prediction Popup
-        const predictionPopup = document.getElementById('predictionPopup');
-        const popupClose = document.getElementById('popupClose');
+        function closeModal() {
+            if (predictionModal) {
+                predictionModal.classList.remove('is-open');
+                predictionModal.setAttribute('aria-hidden', 'true');
+                document.body.style.overflow = '';
+            }
+        }
 
-        if (predictionPopup) {
-            // Show popup with animation
+        if (predictionModal) {
+            // Show modal with animation
             setTimeout(() => {
-                predictionPopup.classList.add('active');
+                openModal();
             }, 300);
 
-            // Close popup
-            popupClose.addEventListener('click', () => {
-                predictionPopup.classList.remove('active');
-            });
+            // Close modal buttons
+            if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+            // Try Again button - scroll to form
+            if (tryAgainBtn) {
+                tryAgainBtn.addEventListener('click', () => {
+                    closeModal();
+                    document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
+                });
+            }
 
             // Close on overlay click
-            predictionPopup.addEventListener('click', (e) => {
-                if (e.target === predictionPopup) {
-                    predictionPopup.classList.remove('active');
-                }
+            predictionModal.addEventListener('click', (e) => {
+                if (e.target === predictionModal) closeModal();
             });
 
             // Close on Escape key
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    predictionPopup.classList.remove('active');
+                if (e.key === 'Escape' && predictionModal.classList.contains('is-open')) {
+                    closeModal();
                 }
             });
         }
