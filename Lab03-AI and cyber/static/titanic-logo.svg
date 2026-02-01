@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="shipHull" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2C2C2C"/>
+      <stop offset="100%" style="stop-color:#1a1a1a"/>
+    </linearGradient>
+    <linearGradient id="funnel" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#8B1538"/>
+      <stop offset="50%" style="stop-color:#A91D45"/>
+      <stop offset="100%" style="stop-color:#8B1538"/>
+    </linearGradient>
+    <linearGradient id="sea" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0077B6"/>
+      <stop offset="100%" style="stop-color:#023E8A"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Circle background -->
+  <circle cx="60" cy="60" r="58" fill="#0d1b2a" stroke="#8B1538" stroke-width="3"/>
+
+  <!-- Sea -->
+  <path d="M10 75 Q30 70 50 75 T90 75 T110 75 L110 110 Q60 115 10 110 Z" fill="url(#sea)" opacity="0.8"/>
+
+  <!-- Wave details -->
+  <path d="M10 80 Q25 75 40 80 T70 80 T100 80 T110 80" fill="none" stroke="#48CAE4" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Ship hull -->
+  <path d="M25 65 L30 85 L90 85 L95 65 L85 58 L35 58 Z" fill="url(#shipHull)"/>
+  <path d="M30 85 L35 92 L85 92 L90 85 Z" fill="#8B1538"/>
+
+  <!-- Ship body -->
+  <rect x="35" y="48" width="50" height="17" fill="#1a1a1a" rx="2"/>
+
+  <!-- Windows -->
+  <g fill="#FFE4B5" filter="url(#glow)">
+    <rect x="40" y="52" width="5" height="7" rx="1"/>
+    <rect x="48" y="52" width="5" height="7" rx="1"/>
+    <rect x="56" y="52" width="5" height="7" rx="1"/>
+    <rect x="64" y="52" width="5" height="7" rx="1"/>
+    <rect x="72" y="52" width="5" height="7" rx="1"/>
+  </g>
+
+  <!-- Upper deck -->
+  <rect x="40" y="38" width="40" height="10" fill="#2C2C2C" rx="1"/>
+
+  <!-- Funnels -->
+  <rect x="45" y="20" width="8" height="18" fill="url(#funnel)" rx="1"/>
+  <rect x="56" y="20" width="8" height="18" fill="url(#funnel)" rx="1"/>
+  <rect x="67" y="20" width="8" height="18" fill="url(#funnel)" rx="1"/>
+
+  <!-- Funnel tops -->
+  <rect x="44" y="18" width="10" height="3" fill="#1a1a1a" rx="1"/>
+  <rect x="55" y="18" width="10" height="3" fill="#1a1a1a" rx="1"/>
+  <rect x="66" y="18" width="10" height="3" fill="#1a1a1a" rx="1"/>
+
+  <!-- Smoke puffs -->
+  <g fill="#666" opacity="0.5">
+    <circle cx="49" cy="14" r="3"/>
+    <circle cx="60" cy="12" r="4"/>
+    <circle cx="71" cy="14" r="3"/>
+  </g>
+
+  <!-- Mast -->
+  <rect x="59" y="8" width="2" height="30" fill="#4a3728"/>
+
+  <!-- Text arc -->
+  <text x="60" y="108" text-anchor="middle" fill="#FFE4B5" font-family="Georgia, serif" font-size="10" font-weight="bold">TITANIC</text>
+</svg>

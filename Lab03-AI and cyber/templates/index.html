@@ -8,7 +8,7 @@
 </head>
 <body>
     <!-- Page 1: Language Selection -->
-    <div class="intro-page" id="langPage">
+    <div class="intro-page" id="langPage" {% if prediction %}style="display: none !important;"{% endif %}>
         <div class="intro-container">
             <div class="intro-logo">
                 <img src="{{ url_for('static', filename='titanic-logo.svg') }}" alt="Titanic Logo">
@@ -29,7 +29,7 @@
     </div>
 
     <!-- Page 2: Titanic Story Summary -->
-    <div class="intro-page hidden" id="storyPage">
+    <div class="intro-page hidden" id="storyPage" {% if prediction %}style="display: none !important;"{% endif %}>
         <div class="intro-container story-container">
             <h1 class="story-title" data-en="The Titanic Story" data-ar="قصة تيتانيك">The Titanic Story</h1>
             <div class="story-content">
@@ -54,8 +54,8 @@
         </div>
     </div>
 
-    <!-- Main App (hidden initially) -->
-    <div class="main-app hidden" id="mainApp">
+    <!-- Main App (hidden initially, shown if prediction exists) -->
+    <div class="main-app" id="mainApp" {% if not prediction %}style="display: none;"{% endif %}>
     {% if prediction %}
     <div class="modal-backdrop {% if prediction.survived %}survival{% else %}death{% endif %}" id="predictionModal" aria-hidden="true">
         <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -289,24 +289,41 @@
             });
         }
 
-        // Language selection handlers
-        selectEnglish.addEventListener('click', () => {
-            setLanguage('en');
-            langPage.classList.add('hidden');
-            storyPage.classList.remove('hidden');
-        });
+        // Check if there's a prediction result - apply saved language
+        {% if prediction %}
+        const savedLang = sessionStorage.getItem('selectedLang') || 'en';
+        setLanguage(savedLang);
+        // Clear after using so it resets on next fresh visit
+        {% endif %}
 
-        selectArabic.addEventListener('click', () => {
-            setLanguage('ar');
-            langPage.classList.add('hidden');
-            storyPage.classList.remove('hidden');
-        });
+        // Language selection handlers
+        if (selectEnglish) {
+            selectEnglish.addEventListener('click', () => {
+                sessionStorage.setItem('selectedLang', 'en');
+                setLanguage('en');
+                langPage.style.display = 'none';
+                storyPage.classList.remove('hidden');
+                storyPage.style.display = 'flex';
+            });
+        }
+
+        if (selectArabic) {
+            selectArabic.addEventListener('click', () => {
+                sessionStorage.setItem('selectedLang', 'ar');
+                setLanguage('ar');
+                langPage.style.display = 'none';
+                storyPage.classList.remove('hidden');
+                storyPage.style.display = 'flex';
+            });
+        }
 
         // OK button handler
-        okBtn.addEventListener('click', () => {
-            storyPage.classList.add('hidden');
-            mainApp.classList.remove('hidden');
-        });
+        if (okBtn) {
+            okBtn.addEventListener('click', () => {
+                storyPage.style.display = 'none';
+                mainApp.style.display = 'block';
+            });
+        }
 
         // Check for saved theme preference or default to light
         const savedTheme = localStorage.getItem('theme') || 'light';
@@ -347,21 +364,31 @@
                 openModal();
             }, 300);
 
-            // Close modal buttons
-            if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+            // Close buttons - just close the modal
+            if (closeModalBtn) {
+                closeModalBtn.addEventListener('click', closeModal);
+            }
+            if (closeBtn) {
+                closeBtn.addEventListener('click', closeModal);
+            }
 
-            // Try Again button - scroll to form
+            // Try Again - close modal and hide results
             if (tryAgainBtn) {
                 tryAgainBtn.addEventListener('click', () => {
                     closeModal();
-                    document.querySelector('form').scrollIntoView({ behavior: 'smooth' });
+                    // Hide the prediction result alert
+                    const resultAlert = document.querySelector('.alert.success, .alert.danger');
+                    if (resultAlert) {
+                        resultAlert.style.display = 'none';
+                    }
                 });
             }
 
             // Close on overlay click
             predictionModal.addEventListener('click', (e) => {
-                if (e.target === predictionModal) closeModal();
+                if (e.target === predictionModal) {
+                    closeModal();
+                }
             });
 
             // Close on Escape key

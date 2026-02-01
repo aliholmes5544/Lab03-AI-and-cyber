@@ -56,11 +56,11 @@ body {
 }
 
 .intro-page.hidden {
-    display: none;
+    display: none !important;
 }
 
 .main-app.hidden {
-    display: none;
+    display: none !important;
 }
 
 .intro-container {
@@ -732,6 +732,9 @@ body[data-theme="dark"] .not-survived {
     cursor: pointer;
     font-weight: 600;
     color: var(--text-primary);
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
 }
 
 .modal-btn.primary {
