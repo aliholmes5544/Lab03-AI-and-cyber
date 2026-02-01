@@ -132,6 +132,51 @@ body {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+/* Theme Selection Buttons */
+.theme-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.theme-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 30px;
+    border: 2px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--input-bg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.theme-btn:hover {
+    border-color: var(--qatar-primary);
+    background: var(--container-bg);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px var(--shadow-color);
+}
+
+.theme-btn.active {
+    border-color: var(--qatar-primary);
+    background: var(--qatar-primary);
+    color: #fff;
+}
+
+.theme-btn.active svg {
+    stroke: #fff;
+}
+
+.theme-btn svg {
+    stroke: var(--text-primary);
+}
+
 /* Story Page */
 .story-container {
     max-width: 600px;

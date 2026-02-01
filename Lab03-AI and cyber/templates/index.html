@@ -7,14 +7,41 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <!-- Page 1: Language Selection -->
+    <!-- Page 1: Language & Theme Selection -->
     <div class="intro-page" id="langPage" {% if prediction %}style="display: none !important;"{% endif %}>
         <div class="intro-container">
             <div class="intro-logo">
                 <img src="{{ url_for('static', filename='titanic-logo.svg') }}" alt="Titanic Logo">
             </div>
             <h1 class="intro-title">Welcome / مرحباً</h1>
-            <p class="intro-subtitle">Select your language / اختر لغتك</p>
+
+            <!-- Theme Selection -->
+            <p class="intro-subtitle">Select theme / اختر المظهر</p>
+            <div class="theme-buttons">
+                <button class="theme-btn" id="selectLight">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <span>Light</span>
+                </button>
+                <button class="theme-btn" id="selectDark">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <span>Dark</span>
+                </button>
+            </div>
+
+            <!-- Language Selection -->
+            <p class="intro-subtitle" style="margin-top: 30px;">Select language / اختر لغتك</p>
             <div class="lang-buttons">
                 <button class="lang-btn" id="selectEnglish">
                     <img class="lang-flag-img" src="{{ url_for('static', filename='img/british_flag.png') }}" alt="English">
@@ -133,24 +160,6 @@
         </div>
     </div>
     {% endif %}
-    <div class="controls">
-        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
-        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-        </button>
-    </div>
     <div class="container">
         <div class="header">
             <div class="logo-container">
@@ -266,7 +275,6 @@
     </div> <!-- Close main-app -->
 
     <script>
-        const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 
         // Intro pages elements
@@ -275,6 +283,8 @@
         const mainApp = document.getElementById('mainApp');
         const selectEnglish = document.getElementById('selectEnglish');
         const selectArabic = document.getElementById('selectArabic');
+        const selectLight = document.getElementById('selectLight');
+        const selectDark = document.getElementById('selectDark');
         const okBtn = document.getElementById('okBtn');
 
         // Set language function
@@ -317,6 +327,29 @@
             });
         }
 
+        // Theme selection handlers
+        function setTheme(theme) {
+            body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+            // Update button active states
+            if (selectLight && selectDark) {
+                selectLight.classList.toggle('active', theme === 'light');
+                selectDark.classList.toggle('active', theme === 'dark');
+            }
+        }
+
+        if (selectLight) {
+            selectLight.addEventListener('click', () => {
+                setTheme('light');
+            });
+        }
+
+        if (selectDark) {
+            selectDark.addEventListener('click', () => {
+                setTheme('dark');
+            });
+        }
+
         // OK button handler
         if (okBtn) {
             okBtn.addEventListener('click', () => {
@@ -325,16 +358,9 @@
             });
         }
 
-        // Check for saved theme preference or default to light
+        // Apply saved theme preference or default to light
         const savedTheme = localStorage.getItem('theme') || 'light';
-        body.setAttribute('data-theme', savedTheme);
-
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
-        });
+        setTheme(savedTheme);
 
         // Prediction Modal
         const predictionModal = document.getElementById('predictionModal');
