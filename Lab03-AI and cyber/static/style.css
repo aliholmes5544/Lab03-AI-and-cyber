@@ -43,6 +43,38 @@ body {
 }
 
 
+/* ===================== */
+/* Video Backgrounds */
+/* ===================== */
+.video-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+}
+
+/* Light Mode Video */
+.light-video {
+    display: block;
+}
+
+body[data-theme="dark"] .light-video {
+    display: none;
+}
+
+/* Dark Mode Video */
+.dark-video {
+    display: none;
+}
+
+body[data-theme="dark"] .dark-video {
+    display: block;
+}
+
+/* ===================== */
 /* Intro Pages */
 .intro-page {
     position: fixed;

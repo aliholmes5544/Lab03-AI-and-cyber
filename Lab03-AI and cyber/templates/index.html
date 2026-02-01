@@ -7,6 +7,15 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
+    <!-- Video Background - Light Mode -->
+    <video class="video-bg light-video" autoplay muted loop playsinline>
+        <source src="{{ url_for('static', filename='img/light_mode.mp4') }}" type="video/mp4">
+    </video>
+
+    <!-- Video Background - Dark Mode -->
+    <video class="video-bg dark-video" autoplay muted loop playsinline>
+        <source src="{{ url_for('static', filename='img/dark_mode.mp4') }}" type="video/mp4">
+    </video>
     <!-- Page 1: Language & Theme Selection -->
     <div class="intro-page" id="langPage" {% if prediction %}style="display: none !important;"{% endif %}>
         <div class="intro-container">
