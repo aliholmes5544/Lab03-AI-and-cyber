@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="skyNight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0d1b2a"/>
+      <stop offset="40%" style="stop-color:#1b263b"/>
+      <stop offset="100%" style="stop-color:#415a77"/>
+    </linearGradient>
+    <linearGradient id="seaNight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1b3a4b"/>
+      <stop offset="50%" style="stop-color:#0d1b2a"/>
+      <stop offset="100%" style="stop-color:#070d15"/>
+    </linearGradient>
+    <linearGradient id="hullGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a"/>
+      <stop offset="100%" style="stop-color:#0d0d0d"/>
+    </linearGradient>
+    <linearGradient id="funnelGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#5c0a1f"/>
+      <stop offset="50%" style="stop-color:#8B1538"/>
+      <stop offset="100%" style="stop-color:#5c0a1f"/>
+    </linearGradient>
+    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#fffef0"/>
+      <stop offset="30%" style="stop-color:#f0e6d3"/>
+      <stop offset="100%" style="stop-color:#c9b896;stop-opacity:0"/>
+    </radialGradient>
+    <radialGradient id="moonReflection" cx="50%" cy="0%" r="100%">
+      <stop offset="0%" style="stop-color:#f0e6d3;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#1b3a4b;stop-opacity:0"/>
+    </radialGradient>
+    <linearGradient id="smokeGradient" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#333;stop-opacity:0.6"/>
+      <stop offset="100%" style="stop-color:#666;stop-opacity:0"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="windowGlow" x="-100%" y="-100%" width="300%" height="300%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-opacity="0.5"/>
+    </filter>
+    <filter id="starGlow">
+      <feGaussianBlur stdDeviation="1" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <style>
+    @keyframes waveMove1 { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-40px); } }
+    @keyframes waveMove2 { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(30px); } }
+    @keyframes shipFloat { 0%, 100% { transform: translate(960px, 520px) rotate(0deg); } 25% { transform: translate(960px, 515px) rotate(0.5deg); } 50% { transform: translate(960px, 510px) rotate(0deg); } 75% { transform: translate(960px, 515px) rotate(-0.5deg); } }
+    @keyframes smokeRise { 0% { transform: translateY(0) scale(1); opacity: 0.5; } 100% { transform: translateY(-80px) scale(2); opacity: 0; } }
+    @keyframes starTwinkle { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+    @keyframes moonPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+    @keyframes windowFlicker { 0%, 90%, 100% { opacity: 1; } 92% { opacity: 0.7; } 94% { opacity: 1; } 96% { opacity: 0.8; } }
+    @keyframes reflectionShimmer { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.4; } }
+    .wave1 { animation: waveMove1 4s ease-in-out infinite; }
+    .wave2 { animation: waveMove2 5s ease-in-out infinite; }
+    .wave3 { animation: waveMove1 6s ease-in-out infinite reverse; }
+    .ship { animation: shipFloat 5s ease-in-out infinite; }
+    .smoke { animation: smokeRise 3s ease-out infinite; }
+    .smoke2 { animation: smokeRise 3s ease-out infinite 0.5s; }
+    .smoke3 { animation: smokeRise 3s ease-out infinite 1s; }
+    .star { animation: starTwinkle 3s ease-in-out infinite; }
+    .moon { animation: moonPulse 6s ease-in-out infinite; transform-origin: center; }
+    .window { animation: windowFlicker 8s ease-in-out infinite; }
+    .reflection { animation: reflectionShimmer 3s ease-in-out infinite; }
+  </style>
+
+  <rect width="1920" height="600" fill="url(#skyNight)"/>
+
+  <g fill="white" filter="url(#starGlow)">
+    <circle cx="100" cy="80" r="1.5" class="star"/><circle cx="250" cy="150" r="1" class="star" style="animation-delay:0.5s"/>
+    <circle cx="400" cy="60" r="2" class="star" style="animation-delay:1s"/><circle cx="520" cy="200" r="1" class="star" style="animation-delay:0.3s"/>
+    <circle cx="650" cy="90" r="1.5" class="star" style="animation-delay:1.5s"/><circle cx="780" cy="180" r="1" class="star" style="animation-delay:0.8s"/>
+    <circle cx="900" cy="50" r="2" class="star" style="animation-delay:2s"/><circle cx="1050" cy="130" r="1.5" class="star" style="animation-delay:0.2s"/>
+    <circle cx="1180" cy="70" r="1" class="star" style="animation-delay:1.2s"/><circle cx="1300" cy="160" r="2" class="star" style="animation-delay:0.6s"/>
+    <circle cx="1450" cy="100" r="1.5" class="star" style="animation-delay:1.8s"/><circle cx="1800" cy="170" r="2" class="star" style="animation-delay:0.9s"/>
+    <circle cx="180" cy="220" r="1" class="star" style="animation-delay:0.7s"/><circle cx="350" cy="280" r="1.5" class="star" style="animation-delay:1.6s"/>
+    <circle cx="1100" cy="240" r="1.5" class="star" style="animation-delay:1.9s"/><circle cx="1380" cy="280" r="1" class="star" style="animation-delay:1.1s"/>
+  </g>
+
+  <g class="moon">
+    <circle cx="1650" cy="120" r="100" fill="url(#moonGlow)" filter="url(#glow)"/>
+    <circle cx="1650" cy="120" r="50" fill="#fffef0"/>
+    <circle cx="1635" cy="110" r="8" fill="#e8dcc8" opacity="0.5"/>
+    <circle cx="1665" cy="130" r="5" fill="#e8dcc8" opacity="0.4"/>
+  </g>
+
+  <rect y="550" width="1920" height="530" fill="url(#seaNight)"/>
+  <ellipse cx="1650" cy="600" rx="150" ry="30" fill="url(#moonReflection)" class="reflection"/>
+
+  <g class="wave1"><path d="M-100 580 Q0 560 100 580 T300 580 T500 580 T700 580 T900 580 T1100 580 T1300 580 T1500 580 T1700 580 T1900 580 T2100 580 L2100 620 L-100 620 Z" fill="#2d4a5e" opacity="0.6"/></g>
+  <g class="wave2"><path d="M-50 600 Q50 575 150 600 T350 600 T550 600 T750 600 T950 600 T1150 600 T1350 600 T1550 600 T1750 600 T1950 600 L1950 650 L-50 650 Z" fill="#3d5a6e" opacity="0.5"/></g>
+  <g class="wave3"><path d="M0 620 Q80 595 160 620 T320 620 T480 620 T640 620 T800 620 T960 620 T1120 620 T1280 620 T1440 620 T1600 620 T1760 620 T1920 620 L1920 670 L0 670 Z" fill="#4d6a7e" opacity="0.4"/></g>
+
+  <g class="ship" filter="url(#softShadow)">
+    <ellipse cx="0" cy="160" rx="280" ry="20" fill="#050a10" opacity="0.6"/>
+    <path d="M-320 50 L-300 130 L300 130 L320 50 L270 25 L-270 25 Z" fill="url(#hullGradient)"/>
+    <path d="M-300 130 L-270 165 L270 165 L300 130 Z" fill="#5c0a1f"/>
+    <line x1="-280" y1="90" x2="280" y2="90" stroke="#333" stroke-width="2"/>
+    <rect x="-270" y="-40" width="540" height="90" fill="#0d0d0d" rx="3"/>
+
+    <g fill="#FFD700" filter="url(#windowGlow)" class="window">
+      <rect x="-240" y="-20" width="18" height="25" rx="3"/><rect x="-210" y="-20" width="18" height="25" rx="3"/>
+      <rect x="-180" y="-20" width="18" height="25" rx="3"/><rect x="-150" y="-20" width="18" height="25" rx="3"/>
+      <rect x="-120" y="-20" width="18" height="25" rx="3"/><rect x="-90" y="-20" width="18" height="25" rx="3"/>
+      <rect x="-60" y="-20" width="18" height="25" rx="3"/><rect x="-30" y="-20" width="18" height="25" rx="3"/>
+      <rect x="0" y="-20" width="18" height="25" rx="3"/><rect x="30" y="-20" width="18" height="25" rx="3"/>
+      <rect x="60" y="-20" width="18" height="25" rx="3"/><rect x="90" y="-20" width="18" height="25" rx="3"/>
+      <rect x="120" y="-20" width="18" height="25" rx="3"/><rect x="150" y="-20" width="18" height="25" rx="3"/>
+      <rect x="180" y="-20" width="18" height="25" rx="3"/><rect x="210" y="-20" width="18" height="25" rx="3"/>
+    </g>
+
+    <rect x="-220" y="-85" width="440" height="45" fill="#1a1a1a" rx="3"/>
+
+    <g>
+      <rect x="-140" y="-175" width="50" height="90" fill="url(#funnelGradient)" rx="2"/>
+      <rect x="-145" y="-180" width="60" height="12" fill="#0d0d0d" rx="2"/>
+      <rect x="-55" y="-175" width="50" height="90" fill="url(#funnelGradient)" rx="2"/>
+      <rect x="-60" y="-180" width="60" height="12" fill="#0d0d0d" rx="2"/>
+      <rect x="30" y="-175" width="50" height="90" fill="url(#funnelGradient)" rx="2"/>
+      <rect x="25" y="-180" width="60" height="12" fill="#0d0d0d" rx="2"/>
+      <rect x="115" y="-175" width="50" height="90" fill="url(#funnelGradient)" rx="2"/>
+      <rect x="110" y="-180" width="60" height="12" fill="#0d0d0d" rx="2"/>
+    </g>
+
+    <g fill="url(#smokeGradient)">
+      <ellipse cx="-115" cy="-200" rx="20" ry="15" class="smoke"/>
+      <ellipse cx="-115" cy="-210" rx="25" ry="18" class="smoke2"/>
+      <ellipse cx="-30" cy="-200" rx="22" ry="16" class="smoke" style="animation-delay:0.3s"/>
+      <ellipse cx="55" cy="-200" rx="20" ry="15" class="smoke3"/>
+      <ellipse cx="140" cy="-200" rx="18" ry="14" class="smoke" style="animation-delay:0.6s"/>
+    </g>
+
+    <rect x="-5" y="-260" width="10" height="175" fill="#2a1f14"/>
+    <rect x="200" y="-210" width="8" height="125" fill="#2a1f14"/>
+    <circle cx="0" cy="-260" r="4" fill="#ff6b6b" filter="url(#glow)"/>
+    <circle cx="204" cy="-210" r="3" fill="#4ecdc4" filter="url(#glow)"/>
+  </g>
+
+  <g class="wave1"><path d="M-100 700 Q0 670 100 700 T300 700 T500 700 T700 700 T900 700 T1100 700 T1300 700 T1500 700 T1700 700 T1900 700 T2100 700 L2100 1080 L-100 1080 Z" fill="#0d1b2a" opacity="0.8"/></g>
+</svg>
