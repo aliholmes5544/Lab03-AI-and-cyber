@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% block title %}{{ t('edit_user_title') }} {{ user.username }} - {{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h3 class="card-title mb-4">
+                    <i class="bi bi-pencil"></i> {{ t('edit_user_title') }} {{ user.username }}
+                </h3>
+                <form method="POST" id="userEditForm">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ t('label_email') }}</label>
+                                {{ form.email(class="form-control", placeholder=t('placeholder_email')) }}
+                                {% for error in form.email.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ t('label_new_password') }}</label>
+                                {{ form.password(class="form-control", placeholder=t('placeholder_new_password')) }}
+                                <div class="form-text">{{ t('password_leave_blank') }}</div>
+                                {% for error in form.password.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ t('label_confirm_password') }}</label>
+                                {{ form.confirm_password(class="form-control", placeholder=t('placeholder_confirm_password')) }}
+                                {% for error in form.confirm_password.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ t('label_role') }}</label>
+                                {{ form.role(class="form-select") }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">{{ t('label_clearance') }}</label>
+                                {{ form.clearance(class="form-select", id="clearanceSelect") }}
+                            </div>
+                            <div class="mb-3 form-check">
+                                {{ form.is_active(class="form-check-input") }}
+                                <label class="form-check-label">{{ t('label_active') }}</label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label">{{ t('label_permissions') }}</label>
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="mb-3 form-check">
+                                            {{ form.grant_all_at_clearance(class="form-check-input", id="grantAllCheck") }}
+                                            <label class="form-check-label" for="grantAllCheck">
+                                                {{ t('grant_all_at_clearance') }}
+                                            </label>
+                                        </div>
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <strong>{{ t('read_permissions') }}</strong>
+                                                <div class="mt-2">
+                                                    {% for subfield in form.permissions %}
+                                                    {% set perm_value = subfield.data %}
+                                                    {% if perm_value is string and perm_value.startswith('read_') %}
+                                                    {% set level = perm_value.split('_')[1] %}
+                                                    <div class="form-check">
+                                                        {{ subfield(class="form-check-input permission-checkbox", **{'data-level': level}) }}
+                                                        <label class="form-check-label" for="{{ subfield.id }}">
+                                                            {{ t('perm_' + perm_value) }}
+                                                        </label>
+                                                    </div>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <strong>{{ t('write_permissions') }}</strong>
+                                                <div class="mt-2">
+                                                    {% for subfield in form.permissions %}
+                                                    {% set perm_value = subfield.data %}
+                                                    {% if perm_value is string and perm_value.startswith('write_') %}
+                                                    {% set level = perm_value.split('_')[1] %}
+                                                    <div class="form-check">
+                                                        {{ subfield(class="form-check-input permission-checkbox", **{'data-level': level}) }}
+                                                        <label class="form-check-label" for="{{ subfield.id }}">
+                                                            {{ t('perm_' + perm_value) }}
+                                                        </label>
+                                                    </div>
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">{{ t('btn_update_user') }}</button>
+                    <a href="{{ url_for('admin.users') }}" class="btn btn-secondary ms-2">{{ t('btn_cancel') }}</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const clearanceSelect = document.getElementById('clearanceSelect');
+    const grantAllCheck = document.getElementById('grantAllCheck');
+    const permissionCheckboxes = document.querySelectorAll('.permission-checkbox');
+
+    function updatePermissionState() {
+        const clearance = parseInt(clearanceSelect.value);
+        const grantAll = grantAllCheck.checked;
+
+        permissionCheckboxes.forEach(function(checkbox) {
+            const level = parseInt(checkbox.getAttribute('data-level'));
+            // Disable checkboxes above clearance level
+            if (level > clearance) {
+                checkbox.disabled = true;
+                checkbox.checked = false;
+            } else {
+                checkbox.disabled = grantAll;
+                if (grantAll) {
+                    checkbox.checked = true;
+                }
+            }
+        });
+    }
+
+    clearanceSelect.addEventListener('change', updatePermissionState);
+    grantAllCheck.addEventListener('change', updatePermissionState);
+
+    // Initialize state
+    updatePermissionState();
+});
+</script>
+{% endblock %}
