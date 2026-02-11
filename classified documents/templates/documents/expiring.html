@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% block title %}{{ t('expiring_title') }} - {{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-calendar-x"></i> {{ t('expiring_title') }}</h2>
+    <div>
+        <div class="btn-group">
+            <a href="{{ url_for('documents.expiring', days=7) }}"
+               class="btn btn-outline-secondary {% if days == 7 %}active{% endif %}">7 {{ t('days') }}</a>
+            <a href="{{ url_for('documents.expiring', days=14) }}"
+               class="btn btn-outline-secondary {% if days == 14 %}active{% endif %}">14 {{ t('days') }}</a>
+            <a href="{{ url_for('documents.expiring', days=30) }}"
+               class="btn btn-outline-secondary {% if days == 30 %}active{% endif %}">30 {{ t('days') }}</a>
+        </div>
+    </div>
+</div>
+
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i>
+    {{ t('expiring_within') }} {{ days }} {{ t('days') }}: {{ total }} {{ t('documents_count') if total != 1 else t('document_count') }}
+</div>
+
+{% if documents %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>{{ t('th_title') }}</th>
+                <th>{{ t('th_classification') }}</th>
+                <th>{{ t('th_expires') }}</th>
+                <th>{{ t('th_actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in documents %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('documents.detail', doc_id=doc.id) }}">
+                        {{ doc.title }}
+                    </a>
+                </td>
+                <td>
+                    <span class="badge bg-{{ classification_levels[doc.classification].color }}">
+                        {{ classification_levels[doc.classification].label }}
+                    </span>
+                </td>
+                <td>
+                    <span class="text-danger">{{ doc.expires_at }}</span>
+                </td>
+                <td>
+                    <a href="{{ url_for('documents.detail', doc_id=doc.id) }}"
+                       class="btn btn-sm btn-outline-primary" title="{{ t('btn_view') }}">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                    {% if current_user.role == 'admin' %}
+                    <form action="{{ url_for('documents.archive_document', doc_id=doc.id) }}"
+                          method="POST" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-warning" title="{{ t('btn_archive') }}">
+                            <i class="bi bi-archive"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<nav>
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.expiring', days=days, page=page-1) }}">{{ t('pagination_previous') }}</a>
+        </li>
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.expiring', days=days, page=p) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.expiring', days=days, page=page+1) }}">{{ t('pagination_next') }}</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-calendar-check display-1 text-success"></i>
+    <p class="text-muted mt-3">{{ t('no_expiring_documents') }}</p>
+</div>
+{% endif %}
+{% endblock %}

@@ -53,6 +53,74 @@ CREATE TABLE IF NOT EXISTS user_permissions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE(user_id, permission)
 );
+
+-- Comments on documents
+CREATE TABLE IF NOT EXISTS document_comments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    document_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
+-- Tags for organizing documents
+CREATE TABLE IF NOT EXISTS tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    color TEXT DEFAULT 'secondary',
+    created_by INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (created_by) REFERENCES users(id)
+);
+
+-- Document-tag relationship
+CREATE TABLE IF NOT EXISTS document_tags (
+    document_id INTEGER NOT NULL,
+    tag_id INTEGER NOT NULL,
+    added_by INTEGER NOT NULL,
+    added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (document_id, tag_id),
+    FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES tags(id) ON DELETE CASCADE
+);
+
+-- User favorites
+CREATE TABLE IF NOT EXISTS favorites (
+    user_id INTEGER NOT NULL,
+    document_id INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, document_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE
+);
+
+-- Document version history
+CREATE TABLE IF NOT EXISTS document_versions (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    document_id INTEGER NOT NULL,
+    version_number INTEGER NOT NULL,
+    stored_filename TEXT NOT NULL,
+    file_size INTEGER NOT NULL,
+    uploaded_by INTEGER NOT NULL,
+    change_notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id)
+);
+
+-- Recently viewed documents
+CREATE TABLE IF NOT EXISTS recently_viewed (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    document_id INTEGER NOT NULL,
+    viewed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, document_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (document_id) REFERENCES documents(id) ON DELETE CASCADE
+);
 """
 
 
@@ -65,19 +133,24 @@ def init_db():
     # Seed admin user if not exists
     cursor = db.execute("SELECT id FROM users WHERE username = 'admin'")
     if cursor.fetchone() is None:
+        admin_password = os.environ.get("ADMIN_PASSWORD", "admin")
+        admin_email = os.environ.get("ADMIN_EMAIL", "admin@example.com")
         db.execute(
             "INSERT INTO users (username, email, password_hash, role, clearance) "
             "VALUES (?, ?, ?, ?, ?)",
             (
                 "admin",
-                "admin@example.com",
-                generate_password_hash("admin"),
+                admin_email,
+                generate_password_hash(admin_password),
                 "admin",
                 3,
             ),
         )
         db.commit()
-        print("Admin user created (username: admin, password: admin)")
+        if admin_password == "admin":
+            print("WARNING: Admin created with default password. "
+                  "Set ADMIN_PASSWORD env var for production.")
+        print("Admin user created (username: admin)")
     else:
         print("Admin user already exists")
 
@@ -102,6 +175,18 @@ def init_db():
                     )
             db.commit()
             print(f"Granted permissions to user (id={user_id})")
+
+    # Migration: Add expiration columns to documents table if not exists
+    cursor = db.execute("PRAGMA table_info(documents)")
+    columns = [row[1] for row in cursor.fetchall()]
+    if "expires_at" not in columns:
+        db.execute("ALTER TABLE documents ADD COLUMN expires_at TIMESTAMP DEFAULT NULL")
+        db.commit()
+        print("Added expires_at column to documents table")
+    if "is_archived" not in columns:
+        db.execute("ALTER TABLE documents ADD COLUMN is_archived INTEGER DEFAULT 0")
+        db.commit()
+        print("Added is_archived column to documents table")
 
     db.close()
     print(f"Database initialized at {Config.DATABASE}")

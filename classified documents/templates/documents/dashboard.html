@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+{% block title %}{{ t('dashboard_title') }} - {{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-folder2-open"></i> {{ t('dashboard_title') }}</h2>
+    <div>
+        <span class="text-muted me-3">{{ total }} {{ t('documents_count') if total != 1 else t('document_count') }}</span>
+        <a href="{{ url_for('documents.upload') }}" class="btn btn-primary">
+            <i class="bi bi-upload"></i> {{ t('btn_upload') }}
+        </a>
+    </div>
+</div>
+
+<!-- Sort and Filter Controls -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-2">
+                <label class="form-label small">{{ t('label_sort_by') }}</label>
+                <select name="sort_by" class="form-select form-select-sm">
+                    <option value="created_at" {% if sort_by == 'created_at' %}selected{% endif %}>{{ t('sort_upload_date') }}</option>
+                    <option value="updated_at" {% if sort_by == 'updated_at' %}selected{% endif %}>{{ t('sort_updated') }}</option>
+                    <option value="title" {% if sort_by == 'title' %}selected{% endif %}>{{ t('sort_title') }}</option>
+                    <option value="file_size" {% if sort_by == 'file_size' %}selected{% endif %}>{{ t('sort_size') }}</option>
+                    <option value="classification" {% if sort_by == 'classification' %}selected{% endif %}>{{ t('sort_classification') }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">{{ t('label_sort_order') }}</label>
+                <select name="sort_order" class="form-select form-select-sm">
+                    <option value="desc" {% if sort_order == 'desc' %}selected{% endif %}>{{ t('order_desc') }}</option>
+                    <option value="asc" {% if sort_order == 'asc' %}selected{% endif %}>{{ t('order_asc') }}</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">{{ t('label_date_from') }}</label>
+                <input type="date" name="date_from" class="form-control form-control-sm" value="{{ date_from }}">
+            </div>
+            <div class="col-md-2">
+                <label class="form-label small">{{ t('label_date_to') }}</label>
+                <input type="date" name="date_to" class="form-control form-control-sm" value="{{ date_to }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-sm btn-outline-primary">
+                    <i class="bi bi-funnel"></i> {{ t('btn_filter') }}
+                </button>
+                <a href="{{ url_for('documents.dashboard') }}" class="btn btn-sm btn-outline-secondary">
+                    {{ t('btn_clear') }}
+                </a>
+                <a href="{{ url_for('documents.advanced_search') }}" class="btn btn-sm btn-outline-info">
+                    <i class="bi bi-search"></i> {{ t('advanced_search') }}
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if documents %}
+<!-- Bulk Actions Bar -->
+<div id="bulkActionsBar" class="card shadow-sm mb-3 d-none">
+    <div class="card-body py-2">
+        <form id="bulkForm" method="POST" class="d-flex align-items-center gap-3">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="document_ids" id="selectedDocIds">
+            <span class="text-muted"><span id="selectedCount">0</span> {{ t('selected') }}</span>
+            <button type="submit" formaction="{{ url_for('documents.bulk_download') }}" class="btn btn-sm btn-outline-primary">
+                <i class="bi bi-download"></i> {{ t('btn_download_zip') }}
+            </button>
+            {% if current_user.role == 'admin' %}
+            <button type="submit" formaction="{{ url_for('documents.bulk_delete') }}" class="btn btn-sm btn-outline-danger"
+                    onclick="return confirm('{{ t('confirm_bulk_delete') }}')">
+                <i class="bi bi-trash"></i> {{ t('btn_delete_selected') }}
+            </button>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th style="width: 30px;">
+                    <input type="checkbox" class="form-check-input" id="selectAll">
+                </th>
+                <th>{{ t('th_title') }}</th>
+                <th>{{ t('th_classification') }}</th>
+                <th>{{ t('th_tags') }}</th>
+                <th>{{ t('th_size') }}</th>
+                <th>{{ t('th_uploaded') }}</th>
+                <th>{{ t('th_actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in documents %}
+            <tr>
+                <td>
+                    <input type="checkbox" class="form-check-input doc-checkbox" value="{{ doc.id }}">
+                </td>
+                <td>
+                    <a href="{{ url_for('documents.detail', doc_id=doc.id) }}">
+                        {{ doc.title }}
+                    </a>
+                    {% if doc.id in favorite_ids %}
+                    <i class="bi bi-star-fill text-warning ms-1" title="{{ t('favorited') }}"></i>
+                    {% endif %}
+                </td>
+                <td>
+                    <span class="badge bg-{{ classification_levels[doc.classification].color }}">
+                        {{ classification_levels[doc.classification].label }}
+                    </span>
+                </td>
+                <td>
+                    {% for tag in doc_tags.get(doc.id, []) %}
+                    <span class="badge bg-{{ tag.color }} me-1">{{ tag.name }}</span>
+                    {% endfor %}
+                </td>
+                <td class="text-muted small">{{ "%.1f"|format(doc.file_size / 1024) }} KB</td>
+                <td class="text-muted small">{{ doc.created_at }}</td>
+                <td>
+                    <div class="btn-group btn-group-sm">
+                        <a href="{{ url_for('documents.preview', doc_id=doc.id) }}"
+                           class="btn btn-outline-info" title="{{ t('btn_preview') }}">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <a href="{{ url_for('documents.download', doc_id=doc.id) }}"
+                           class="btn btn-outline-secondary" title="{{ t('btn_download') }}">
+                            <i class="bi bi-download"></i>
+                        </a>
+                        <form action="{{ url_for('documents.toggle_favorite', doc_id=doc.id) }}"
+                              method="POST" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-outline-warning"
+                                    title="{{ t('btn_unfavorite') if doc.id in favorite_ids else t('btn_favorite') }}">
+                                <i class="bi bi-star{% if doc.id in favorite_ids %}-fill{% endif %}"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<nav>
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.dashboard', page=page-1, sort_by=sort_by, sort_order=sort_order, date_from=date_from, date_to=date_to) }}">{{ t('pagination_previous') }}</a>
+        </li>
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.dashboard', page=p, sort_by=sort_by, sort_order=sort_order, date_from=date_from, date_to=date_to) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.dashboard', page=page+1, sort_by=sort_by, sort_order=sort_order, date_from=date_from, date_to=date_to) }}">{{ t('pagination_next') }}</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAll = document.getElementById('selectAll');
+    const checkboxes = document.querySelectorAll('.doc-checkbox');
+    const bulkBar = document.getElementById('bulkActionsBar');
+    const selectedIds = document.getElementById('selectedDocIds');
+    const selectedCount = document.getElementById('selectedCount');
+
+    function updateBulkBar() {
+        const checked = document.querySelectorAll('.doc-checkbox:checked');
+        const ids = Array.from(checked).map(cb => cb.value);
+        selectedIds.value = ids.join(',');
+        selectedCount.textContent = ids.length;
+        bulkBar.classList.toggle('d-none', ids.length === 0);
+    }
+
+    selectAll.addEventListener('change', function() {
+        checkboxes.forEach(cb => cb.checked = this.checked);
+        updateBulkBar();
+    });
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', updateBulkBar);
+    });
+});
+</script>
+
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-folder2 display-1 text-muted"></i>
+    <p class="text-muted mt-3">{{ t('no_documents') }}</p>
+    <a href="{{ url_for('documents.upload') }}" class="btn btn-primary">{{ t('upload_first') }}</a>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}{{ t('advanced_search_title') }} - {{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-search"></i> {{ t('advanced_search_title') }}</h2>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">{{ t('label_search') }}</label>
+                    {{ form.query(class="form-control", placeholder=t('placeholder_search')) }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ t('label_classification') }}</label>
+                    {{ form.classification(class="form-select") }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ t('label_tag') }}</label>
+                    {{ form.tag_id(class="form-select") }}
+                </div>
+            </div>
+            <div class="row g-3 mt-1">
+                <div class="col-md-3">
+                    <label class="form-label">{{ t('label_sort_by') }}</label>
+                    {{ form.sort_by(class="form-select") }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ t('label_sort_order') }}</label>
+                    {{ form.sort_order(class="form-select") }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ t('label_date_from') }}</label>
+                    {{ form.date_from(class="form-control", type="date") }}
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">{{ t('label_date_to') }}</label>
+                    {{ form.date_to(class="form-control", type="date") }}
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> {{ t('btn_search') }}
+                    </button>
+                    <a href="{{ url_for('documents.advanced_search') }}" class="btn btn-outline-secondary">
+                        {{ t('btn_clear') }}
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if q or c or date_from or date_to or tag_id %}
+<p class="text-muted">{{ t('found_results') }} {{ total }} {{ t('results') if total != 1 else t('result') }}</p>
+
+{% if documents %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>{{ t('th_title') }}</th>
+                <th>{{ t('th_classification') }}</th>
+                <th>{{ t('th_filename') }}</th>
+                <th>{{ t('th_size') }}</th>
+                <th>{{ t('th_uploaded') }}</th>
+                <th>{{ t('th_actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in documents %}
+            <tr>
+                <td>
+                    <a href="{{ url_for('documents.detail', doc_id=doc.id) }}">
+                        {{ doc.title }}
+                    </a>
+                </td>
+                <td>
+                    <span class="badge bg-{{ classification_levels[doc.classification].color }}">
+                        {{ classification_levels[doc.classification].label }}
+                    </span>
+                </td>
+                <td class="text-muted small">{{ doc.original_filename }}</td>
+                <td class="text-muted small">{{ "%.1f"|format(doc.file_size / 1024) }} KB</td>
+                <td class="text-muted small">{{ doc.created_at }}</td>
+                <td>
+                    <a href="{{ url_for('documents.download', doc_id=doc.id) }}"
+                       class="btn btn-sm btn-outline-secondary" title="{{ t('btn_download') }}">
+                        <i class="bi bi-download"></i>
+                    </a>
+                    <a href="{{ url_for('documents.preview', doc_id=doc.id) }}"
+                       class="btn btn-sm btn-outline-info" title="{{ t('btn_preview') }}">
+                        <i class="bi bi-eye"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<nav>
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.advanced_search', q=q, c=c, sort_by=sort_by, sort_order=sort_order, date_from=date_from, date_to=date_to, tag_id=tag_id, page=page-1) }}">{{ t('pagination_previous') }}</a>
+        </li>
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.advanced_search', q=q, c=c, sort_by=sort_by, sort_order=sort_order, date_from=date_from, date_to=date_to, tag_id=tag_id, page=p) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.advanced_search', q=q, c=c, sort_by=sort_by, sort_order=sort_order, date_from=date_from, date_to=date_to, tag_id=tag_id, page=page+1) }}">{{ t('pagination_next') }}</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="text-center py-4">
+    <p class="text-muted">{{ t('no_search_results') }}</p>
+</div>
+{% endif %}
+{% endif %}
+{% endblock %}

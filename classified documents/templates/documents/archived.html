@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}{{ t('archived_title') }} - {{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-archive"></i> {{ t('archived_title') }}</h2>
+    <span class="text-muted">{{ total }} {{ t('documents_count') if total != 1 else t('document_count') }}</span>
+</div>
+
+{% if documents %}
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>{{ t('th_title') }}</th>
+                <th>{{ t('th_classification') }}</th>
+                <th>{{ t('th_filename') }}</th>
+                <th>{{ t('th_archived_date') }}</th>
+                <th>{{ t('th_actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in documents %}
+            <tr class="table-secondary">
+                <td>
+                    <a href="{{ url_for('documents.detail', doc_id=doc.id) }}">
+                        {{ doc.title }}
+                    </a>
+                </td>
+                <td>
+                    <span class="badge bg-{{ classification_levels[doc.classification].color }}">
+                        {{ classification_levels[doc.classification].label }}
+                    </span>
+                </td>
+                <td class="text-muted small">{{ doc.original_filename }}</td>
+                <td class="text-muted small">{{ doc.updated_at }}</td>
+                <td>
+                    <a href="{{ url_for('documents.download', doc_id=doc.id) }}"
+                       class="btn btn-sm btn-outline-secondary" title="{{ t('btn_download') }}">
+                        <i class="bi bi-download"></i>
+                    </a>
+                    <form action="{{ url_for('documents.unarchive_document', doc_id=doc.id) }}"
+                          method="POST" class="d-inline">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-sm btn-outline-success" title="{{ t('btn_unarchive') }}">
+                            <i class="bi bi-box-arrow-up"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<nav>
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.archived', page=page-1) }}">{{ t('pagination_previous') }}</a>
+        </li>
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.archived', page=p) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('documents.archived', page=page+1) }}">{{ t('pagination_next') }}</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-archive display-1 text-muted"></i>
+    <p class="text-muted mt-3">{{ t('no_archived_documents') }}</p>
+</div>
+{% endif %}
+{% endblock %}

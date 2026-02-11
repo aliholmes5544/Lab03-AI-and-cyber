@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% block title %}{{ doc.title }} - {{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    {{ doc.title }}
+                    {% if is_favorite %}
+                    <i class="bi bi-star-fill text-warning" title="{{ t('favorited') }}"></i>
+                    {% endif %}
+                </h4>
+                <span class="badge bg-{{ classification_levels[doc.classification].color }} fs-6">
+                    {{ classification_levels[doc.classification].label }}
+                </span>
+            </div>
+            <div class="card-body">
+                {% if doc.description %}
+                <p>{{ doc.description }}</p>
+                <hr>
+                {% endif %}
+
+                <!-- Tags Section -->
+                <div class="mb-3">
+                    <strong>{{ t('tags') }}:</strong>
+                    {% for tag in tags %}
+                    <span class="badge bg-{{ tag.color }} me-1">
+                        {{ tag.name }}
+                        <form action="{{ url_for('documents.remove_document_tag', doc_id=doc.id, tag_id=tag.id) }}"
+                              method="POST" class="d-inline">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn-close btn-close-white ms-1" style="font-size: 0.6em;"></button>
+                        </form>
+                    </span>
+                    {% else %}
+                    <span class="text-muted">{{ t('no_tags') }}</span>
+                    {% endfor %}
+
+                    <!-- Add Tag Form -->
+                    {% if add_tag_form.tag_id.choices %}
+                    <form action="{{ url_for('documents.add_document_tag', doc_id=doc.id) }}"
+                          method="POST" class="d-inline-flex align-items-center ms-2">
+                        {{ add_tag_form.hidden_tag() }}
+                        <select name="tag_id" class="form-select form-select-sm" style="width: auto;">
+                            {% for value, label in add_tag_form.tag_id.choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-sm btn-outline-primary ms-1">
+                            <i class="bi bi-plus"></i>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">{{ t('dt_original_filename') }}</dt>
+                    <dd class="col-sm-8">{{ doc.original_filename }}</dd>
+
+                    <dt class="col-sm-4">{{ t('dt_file_size') }}</dt>
+                    <dd class="col-sm-8">{{ "%.1f"|format(doc.file_size / 1024) }} KB</dd>
+
+                    <dt class="col-sm-4">{{ t('dt_mime_type') }}</dt>
+                    <dd class="col-sm-8">{{ doc.mime_type }}</dd>
+
+                    <dt class="col-sm-4">{{ t('dt_uploaded') }}</dt>
+                    <dd class="col-sm-8">{{ doc.created_at }}</dd>
+
+                    <dt class="col-sm-4">{{ t('dt_last_updated') }}</dt>
+                    <dd class="col-sm-8">{{ doc.updated_at }}</dd>
+
+                    {% if doc.expires_at %}
+                    <dt class="col-sm-4">{{ t('dt_expires') }}</dt>
+                    <dd class="col-sm-8"><span class="text-danger">{{ doc.expires_at }}</span></dd>
+                    {% endif %}
+
+                    <dt class="col-sm-4">{{ t('dt_versions') }}</dt>
+                    <dd class="col-sm-8">
+                        <a href="{{ url_for('documents.versions', doc_id=doc.id) }}">
+                            {{ version_count }} {{ t('previous_versions') }}
+                        </a>
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('documents.preview', doc_id=doc.id) }}" class="btn btn-info">
+                    <i class="bi bi-eye"></i> {{ t('btn_preview') }}
+                </a>
+                <a href="{{ url_for('documents.download', doc_id=doc.id) }}" class="btn btn-primary">
+                    <i class="bi bi-download"></i> {{ t('btn_download') }}
+                </a>
+                <form action="{{ url_for('documents.toggle_favorite', doc_id=doc.id) }}"
+                      method="POST" class="d-inline">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline-warning">
+                        <i class="bi bi-star{% if is_favorite %}-fill{% endif %}"></i>
+                        {{ t('btn_unfavorite') if is_favorite else t('btn_favorite') }}
+                    </button>
+                </form>
+                <a href="{{ url_for('documents.dashboard') }}" class="btn btn-secondary ms-2">
+                    {{ t('back_to_dashboard') }}
+                </a>
+            </div>
+        </div>
+
+        <!-- Comments Section -->
+        <div class="card shadow mt-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-chat-dots"></i> {{ t('comments') }} ({{ comments|length }})</h5>
+            </div>
+            <div class="card-body">
+                <!-- Add Comment Form -->
+                <form method="POST" action="{{ url_for('documents.add_comment', doc_id=doc.id) }}" class="mb-4">
+                    {{ comment_form.hidden_tag() }}
+                    <div class="mb-2">
+                        {{ comment_form.content(class="form-control", rows=2, placeholder=t('placeholder_comment')) }}
+                    </div>
+                    {{ comment_form.submit(class="btn btn-primary btn-sm") }}
+                </form>
+
+                {% if comments %}
+                <hr>
+                {% for comment in comments %}
+                <div class="mb-3 pb-3 {% if not loop.last %}border-bottom{% endif %}">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <strong>{{ comment.username }}</strong>
+                            <span class="text-muted small ms-2">{{ comment.created_at }}</span>
+                        </div>
+                        {% if comment.user_id == current_user.id or current_user.role == 'admin' %}
+                        <form action="{{ url_for('documents.delete_comment', comment_id=comment.id) }}"
+                              method="POST" class="d-inline"
+                              onsubmit="return confirm('{{ t('confirm_delete_comment') }}')">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                    <p class="mb-0 mt-2">{{ comment.content }}</p>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p class="text-muted mb-0">{{ t('no_comments') }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <!-- Version History Card -->
+        <div class="card shadow mb-3">
+            <div class="card-header"><h5 class="mb-0"><i class="bi bi-clock-history"></i> {{ t('version_history') }}</h5></div>
+            <div class="card-body">
+                <a href="{{ url_for('documents.versions', doc_id=doc.id) }}" class="btn btn-outline-primary w-100 mb-2">
+                    <i class="bi bi-list"></i> {{ t('view_versions') }} ({{ version_count }})
+                </a>
+                <a href="{{ url_for('documents.reupload', doc_id=doc.id) }}" class="btn btn-outline-secondary w-100">
+                    <i class="bi bi-upload"></i> {{ t('btn_upload_version') }}
+                </a>
+            </div>
+        </div>
+
+        {% if current_user.role == 'admin' %}
+        <!-- Expiration Card -->
+        <div class="card shadow mb-3">
+            <div class="card-header"><h5 class="mb-0"><i class="bi bi-calendar-x"></i> {{ t('expiration') }}</h5></div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('documents.set_expiration', doc_id=doc.id) }}">
+                    {{ expiration_form.hidden_tag() }}
+                    <div class="mb-2">
+                        <label class="form-label">{{ t('label_expires_at') }}</label>
+                        {{ expiration_form.expires_at(class="form-control", type="date") }}
+                    </div>
+                    <div class="d-flex gap-2">
+                        {{ expiration_form.submit(class="btn btn-warning flex-grow-1") }}
+                        {% if doc.expires_at %}
+                        <button type="submit" name="expires_at" value="" class="btn btn-outline-secondary">
+                            {{ t('btn_clear') }}
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Classification Card -->
+        <div class="card shadow mb-3">
+            <div class="card-header"><h5 class="mb-0">{{ t('change_classification') }}</h5></div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('documents.classify', doc_id=doc.id) }}">
+                    {{ classify_form.hidden_tag() }}
+                    <div class="mb-3">
+                        {{ classify_form.classification(class="form-select") }}
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">{{ t('btn_update_classification') }}</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="card shadow">
+            <div class="card-header"><h5 class="mb-0 text-danger">{{ t('danger_zone') }}</h5></div>
+            <div class="card-body">
+                {% if not doc.is_archived %}
+                <form method="POST" action="{{ url_for('documents.archive_document', doc_id=doc.id) }}"
+                      class="mb-2">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline-warning w-100">
+                        <i class="bi bi-archive"></i> {{ t('btn_archive') }}
+                    </button>
+                </form>
+                {% else %}
+                <form method="POST" action="{{ url_for('documents.unarchive_document', doc_id=doc.id) }}"
+                      class="mb-2">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-outline-success w-100">
+                        <i class="bi bi-box-arrow-up"></i> {{ t('btn_unarchive') }}
+                    </button>
+                </form>
+                {% endif %}
+                <form method="POST" action="{{ url_for('documents.delete', doc_id=doc.id) }}"
+                      onsubmit="return confirm('{{ t('confirm_delete') }}')">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="bi bi-trash"></i> {{ t('btn_delete_document') }}
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

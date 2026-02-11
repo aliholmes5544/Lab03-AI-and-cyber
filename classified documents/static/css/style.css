@@ -1,0 +1,139 @@
+/* Qatar Colors: Dark Maroon */
+:root {
+    --qatar-maroon: #5C0E24;
+    --qatar-maroon-dark: #3D0918;
+    --qatar-maroon-light: #7A1330;
+}
+
+body {
+    background-color: #f5f6fa;
+    min-height: 100vh;
+}
+
+[data-bs-theme="dark"] body {
+    background-color: #1a1d23;
+}
+
+/* Navbar - Dark Qatar Maroon */
+.navbar {
+    background-color: var(--qatar-maroon) !important;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.card {
+    border: none;
+    border-radius: 0.5rem;
+}
+
+[data-bs-theme="dark"] .card {
+    border: 1px solid #383d47;
+}
+
+.table th {
+    white-space: nowrap;
+}
+
+/* Table header - Dark Qatar Maroon */
+.table-dark {
+    --bs-table-bg: var(--qatar-maroon);
+    --bs-table-border-color: var(--qatar-maroon-dark);
+}
+
+.badge {
+    font-weight: 500;
+}
+
+#themeToggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: rgba(255,255,255,.85);
+}
+#themeToggle:hover {
+    color: #fff;
+}
+
+/* Primary button - Dark Qatar Maroon */
+.btn-primary {
+    background-color: var(--qatar-maroon);
+    border-color: var(--qatar-maroon);
+}
+.btn-primary:hover, .btn-primary:focus {
+    background-color: var(--qatar-maroon-dark);
+    border-color: var(--qatar-maroon-dark);
+}
+.btn-primary:active {
+    background-color: var(--qatar-maroon-dark) !important;
+    border-color: var(--qatar-maroon-dark) !important;
+}
+
+.btn-outline-primary {
+    color: var(--qatar-maroon);
+    border-color: var(--qatar-maroon);
+}
+.btn-outline-primary:hover {
+    background-color: var(--qatar-maroon);
+    border-color: var(--qatar-maroon);
+    color: #fff;
+}
+
+/* Links - Dark Qatar Maroon */
+a {
+    color: var(--qatar-maroon);
+}
+a:hover {
+    color: var(--qatar-maroon-dark);
+}
+
+.nav-link {
+    color: rgba(255,255,255,.85) !important;
+}
+.nav-link:hover {
+    color: #fff !important;
+}
+
+/* Card headers */
+.card-header {
+    background-color: var(--qatar-maroon);
+    color: #fff;
+}
+
+/* Text colors */
+.text-primary {
+    color: var(--qatar-maroon) !important;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+    border-color: var(--qatar-maroon);
+}
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: var(--qatar-maroon);
+    color: #fff;
+}
+
+/* Pagination */
+.page-link {
+    color: var(--qatar-maroon);
+}
+.page-link:hover {
+    color: var(--qatar-maroon-dark);
+}
+.page-item.active .page-link {
+    background-color: var(--qatar-maroon);
+    border-color: var(--qatar-maroon);
+}
+
+/* Form focus */
+.form-control:focus, .form-select:focus {
+    border-color: var(--qatar-maroon);
+    box-shadow: 0 0 0 0.25rem rgba(92, 14, 36, 0.25);
+}
+
+/* Alert success with maroon accent */
+.alert-success {
+    border-left: 4px solid var(--qatar-maroon);
+}

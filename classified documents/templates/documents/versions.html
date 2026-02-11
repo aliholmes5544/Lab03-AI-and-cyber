@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ t('versions_title') }}: {{ doc.title }} - {{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-clock-history"></i> {{ t('versions_title') }}</h2>
+    <div>
+        <a href="{{ url_for('documents.detail', doc_id=doc.id) }}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> {{ t('back_to_detail') }}
+        </a>
+        <a href="{{ url_for('documents.reupload', doc_id=doc.id) }}" class="btn btn-primary">
+            <i class="bi bi-upload"></i> {{ t('btn_upload_version') }}
+        </a>
+    </div>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header">
+        <strong>{{ doc.title }}</strong>
+        <span class="badge bg-{{ classification_levels[doc.classification].color }} ms-2">
+            {{ classification_levels[doc.classification].label }}
+        </span>
+    </div>
+    <div class="card-body">
+        <h5>{{ t('current_version') }}</h5>
+        <dl class="row mb-0">
+            <dt class="col-sm-3">{{ t('dt_file_size') }}</dt>
+            <dd class="col-sm-9">{{ "%.1f"|format(doc.file_size / 1024) }} KB</dd>
+            <dt class="col-sm-3">{{ t('dt_last_updated') }}</dt>
+            <dd class="col-sm-9">{{ doc.updated_at }}</dd>
+        </dl>
+        <a href="{{ url_for('documents.download', doc_id=doc.id) }}" class="btn btn-sm btn-primary mt-2">
+            <i class="bi bi-download"></i> {{ t('btn_download') }}
+        </a>
+    </div>
+</div>
+
+{% if versions %}
+<h4 class="mb-3">{{ t('previous_versions') }}</h4>
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>{{ t('th_version') }}</th>
+                <th>{{ t('th_uploaded_by') }}</th>
+                <th>{{ t('th_size') }}</th>
+                <th>{{ t('th_change_notes') }}</th>
+                <th>{{ t('th_date') }}</th>
+                <th>{{ t('th_actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for v in versions %}
+            <tr>
+                <td><span class="badge bg-secondary">v{{ v.version_number }}</span></td>
+                <td>{{ v.username }}</td>
+                <td class="text-muted small">{{ "%.1f"|format(v.file_size / 1024) }} KB</td>
+                <td class="text-muted small">{{ v.change_notes or '-' }}</td>
+                <td class="text-muted small">{{ v.created_at }}</td>
+                <td>
+                    <a href="{{ url_for('documents.download_version', version_id=v.id) }}"
+                       class="btn btn-sm btn-outline-secondary" title="{{ t('btn_download') }}">
+                        <i class="bi bi-download"></i>
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="text-center py-4">
+    <p class="text-muted">{{ t('no_previous_versions') }}</p>
+</div>
+{% endif %}
+{% endblock %}

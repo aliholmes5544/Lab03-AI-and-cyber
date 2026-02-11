@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}{{ t('audit_log_title') }} - {{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-journal-text"></i> {{ t('audit_log_title') }}</h2>
+
+<div class="card shadow mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3 align-items-end">
+            <div class="col-md-3">
+                <label class="form-label">{{ t('label_user_id') }}</label>
+                <input type="number" name="user_id" class="form-control"
+                       value="{{ filter_user_id or '' }}" placeholder="{{ t('placeholder_user_id') }}">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">{{ t('label_action') }}</label>
+                <select name="action" class="form-select">
+                    <option value="">{{ t('all_actions') }}</option>
+                    {% for act in ['login', 'logout', 'register', 'upload', 'view', 'download', 'classify', 'delete', 'search', 'edit_user', 'add_user'] %}
+                    <option value="{{ act }}" {% if filter_action == act %}selected{% endif %}>{{ act }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary w-100">{{ t('btn_filter') }}</button>
+            </div>
+            <div class="col-md-3">
+                <a href="{{ url_for('admin.audit_log') }}" class="btn btn-secondary w-100">{{ t('btn_clear') }}</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<p class="text-muted">{{ total }} {{ t('log_entries') if total != 1 else t('log_entry') }}</p>
+
+<div class="table-responsive">
+    <table class="table table-sm table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>{{ t('th_id') }}</th>
+                <th>{{ t('th_timestamp') }}</th>
+                <th>{{ t('th_user') }}</th>
+                <th>{{ t('label_action') }}</th>
+                <th>{{ t('th_target') }}</th>
+                <th>{{ t('th_details') }}</th>
+                <th>{{ t('th_ip') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr>
+                <td>{{ log.id }}</td>
+                <td class="small">{{ log.timestamp }}</td>
+                <td>{{ log.username or 'N/A' }}</td>
+                <td><span class="badge bg-secondary">{{ log.action }}</span></td>
+                <td class="small">{{ log.target_type }}{% if log.target_id %} #{{ log.target_id }}{% endif %}</td>
+                <td class="small">{{ log.details }}</td>
+                <td class="small text-muted">{{ log.ip_address }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if total_pages > 1 %}
+<nav>
+    <ul class="pagination justify-content-center">
+        <li class="page-item {% if page <= 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('admin.audit_log', page=page-1, user_id=filter_user_id, action=filter_action) }}">{{ t('pagination_previous') }}</a>
+        </li>
+        {% for p in range(1, total_pages + 1) %}
+        <li class="page-item {% if p == page %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('admin.audit_log', page=p, user_id=filter_user_id, action=filter_action) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+        <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+            <a class="page-link" href="{{ url_for('admin.audit_log', page=page+1, user_id=filter_user_id, action=filter_action) }}">{{ t('pagination_next') }}</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

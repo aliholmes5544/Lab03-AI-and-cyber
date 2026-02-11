@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}{{ t('tags_title') }} - {{ t('app_title') }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-tags"></i> {{ t('tags_title') }}</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        {% if tags %}
+        <div class="card shadow">
+            <div class="card-header"><h5 class="mb-0">{{ t('all_tags') }}</h5></div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>{{ t('th_tag_name') }}</th>
+                                <th>{{ t('th_documents') }}</th>
+                                <th>{{ t('th_actions') }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tag in tags %}
+                            <tr>
+                                <td>
+                                    <span class="badge bg-{{ tag.color }}">{{ tag.name }}</span>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('documents.tag_documents', tag_id=tag.id) }}">
+                                        {{ tag_counts.get(tag.id, 0) }} {{ t('documents_count') }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('documents.tag_documents', tag_id=tag.id) }}"
+                                       class="btn btn-sm btn-outline-primary" title="{{ t('btn_view') }}">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    {% if current_user.role == 'admin' %}
+                                    <form action="{{ url_for('documents.delete_tag', tag_id=tag.id) }}"
+                                          method="POST" class="d-inline"
+                                          onsubmit="return confirm('{{ t('confirm_delete_tag') }}')">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="{{ t('btn_delete') }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-tags display-1 text-muted"></i>
+            <p class="text-muted mt-3">{{ t('no_tags') }}</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-4">
+        <div class="card shadow">
+            <div class="card-header"><h5 class="mb-0">{{ t('create_tag') }}</h5></div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('documents.create_tag') }}">
+                    {{ tag_form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ t('label_tag_name') }}</label>
+                        {{ tag_form.name(class="form-control", placeholder=t('placeholder_tag_name')) }}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{{ t('label_tag_color') }}</label>
+                        {{ tag_form.color(class="form-select") }}
+                        <div class="mt-2">
+                            <span class="badge bg-primary">Blue</span>
+                            <span class="badge bg-secondary">Gray</span>
+                            <span class="badge bg-success">Green</span>
+                            <span class="badge bg-danger">Red</span>
+                            <span class="badge bg-warning text-dark">Yellow</span>
+                            <span class="badge bg-info">Cyan</span>
+                            <span class="badge bg-dark">Dark</span>
+                        </div>
+                    </div>
+
+                    {{ tag_form.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
